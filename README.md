@@ -1,1 +1,1 @@
-# FastSPLS
+GenSPLS
