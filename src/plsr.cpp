@@ -21,6 +21,8 @@ using namespace arma;
 //' \item{projection}{The projection matrix}
 //' \item{Xmeans}{The column means of X (if centered)}
 //' \item{Ymeans}{The column means of Y (if centered)}
+//' 
+//' @useDynLib GeneSPLS, .registration = TRUE
 //'
 //' @export
 // [[Rcpp::export]]

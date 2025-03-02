@@ -18,13 +18,15 @@
 #' \item{projection}{The projection matrix}
 #' \item{Xmeans}{The column means of X (if centered)}
 #' \item{Ymeans}{The column means of Y (if centered)}
+#' 
+#' @useDynLib GeneSPLS, .registration = TRUE
 #'
 #' @export
 widekernelpls_fit <- function(X, Y, ncomp, center = TRUE, tol = 0, maxit = 100L) {
-    .Call('_GeneSPLS_widekernelpls_fit', PACKAGE = 'GeneSPLS', X, Y, ncomp, center, tol, maxit)
+    .Call(`_GeneSPLS_widekernelpls_fit`, X, Y, ncomp, center, tol, maxit)
 }
 
 widekernelpls_rcpp <- function(X, Y, ncomp) {
-    .Call('_GeneSPLS_widekernelpls_rcpp', PACKAGE = 'GeneSPLS', X, Y, ncomp)
+    .Call(`_GeneSPLS_widekernelpls_rcpp`, X, Y, ncomp)
 }
 
