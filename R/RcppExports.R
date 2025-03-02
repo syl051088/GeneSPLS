@@ -2,9 +2,29 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 #' Wide Kernel PLS Algorithm Implementation
-NULL
-
+#'
+#' This function implements the wide kernel PLS algorithm as described by
+#' Rannar et al. (1994). It's optimized for datasets with more variables than observations.
+#'
+#' @param X The predictor matrix
+#' @param Y The response matrix
+#' @param ncomp Number of components to extract
+#' @param center Logical, whether to center X and Y (default: true)
+#' @param tol Numeric, tolerance used for determining convergence (default: sqrt(machine_eps))
+#' @param maxit Integer, maximum number of iterations (default: 100)
+#'
+#' @return A list containing only:
+#' \item{coefficients}{The regression coefficients matrix}
+#' \item{projection}{The projection matrix}
+#' \item{Xmeans}{The column means of X (if centered)}
+#' \item{Ymeans}{The column means of Y (if centered)}
+#'
+#' @export
 widekernelpls_fit <- function(X, Y, ncomp, center = TRUE, tol = 0, maxit = 100L) {
     .Call('_GeneSPLS_widekernelpls_fit', PACKAGE = 'GeneSPLS', X, Y, ncomp, center, tol, maxit)
+}
+
+widekernelpls_rcpp <- function(X, Y, ncomp) {
+    .Call('_GeneSPLS_widekernelpls_rcpp', PACKAGE = 'GeneSPLS', X, Y, ncomp)
 }
 
