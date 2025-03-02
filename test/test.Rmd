@@ -32,7 +32,7 @@ pls_model$coefficients
 ```
 
 ```{r}
-pls_cpp = GeneSPLS::widekernelpls_fit(X, Y, 5, center = F, tol=.Machine$double.eps^0.5)
+pls_cpp = widekernelpls_fit(X, Y, 5, center = F, tol=.Machine$double.eps^0.5)
 pls_cpp$project
 pls_cpp$coefficients
 ```
