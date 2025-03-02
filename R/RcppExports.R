@@ -6,27 +6,46 @@
 #' This function implements the wide kernel PLS algorithm as described by
 #' Rannar et al. (1994). It's optimized for datasets with more variables than observations.
 #'
-#' @param X The predictor matrix
-#' @param Y The response matrix
+#' @param X Predictor matrix (n x p), p is the number of predictors
+#' @param Y Response matrix (n x m), m is the number of responses
 #' @param ncomp Number of components to extract
 #' @param center Logical, whether to center X and Y (default: true)
-#' @param tol Numeric, tolerance used for determining convergence (default: sqrt(machine_eps))
+#' @param tol Numeric, tolerance used for determining convergence (default: 1e-6)
 #' @param maxit Integer, maximum number of iterations (default: 100)
 #'
-#' @return A list containing only:
+#' @return A list containing:
 #' \item{coefficients}{The regression coefficients matrix}
 #' \item{projection}{The projection matrix}
 #' \item{Xmeans}{The column means of X (if centered)}
 #' \item{Ymeans}{The column means of Y (if centered)}
 #' 
 #' @useDynLib GeneSPLS, .registration = TRUE
+#' @import Rcpp
+#' 
+#' @examples
+#' 
+#' set.seed(815)
+#' 
+#' # Simulating high-dimensional predictor matrix (p >> n)
+#' n <- 10   # Number of observations
+#' p <- 20  # Number of predictors
+#' 
+#' X <- matrix(rnorm(n * p), nrow = n, ncol = p)  # Random normal predictors
+#' 
+#' # True coefficients: Only first 5 predictors contribute to Y
+#' beta <- c(rnorm(5, sd = 2), rep(0, p - 5))
+#' 
+#' # Generating response variable Y with N(0,1) noise
+#' Y <- X %*% beta + rnorm(n)
+#' 
+#' sim_data <- data.frame(Y = Y, X)
+#' 
+#' pls_cpp = GeneSPLS::widekernelpls_fit(X, Y, 5, center = FALSE)
+#' pls_cpp$projection
+#' pls_cpp$coefficients
 #'
 #' @export
-widekernelpls_fit <- function(X, Y, ncomp, center = TRUE, tol = 0, maxit = 100L) {
+widekernelpls_fit <- function(X, Y, ncomp, center = TRUE, tol = 1e-6, maxit = 100L) {
     .Call(`_GeneSPLS_widekernelpls_fit`, X, Y, ncomp, center, tol, maxit)
-}
-
-widekernelpls_rcpp <- function(X, Y, ncomp) {
-    .Call(`_GeneSPLS_widekernelpls_rcpp`, X, Y, ncomp)
 }
 

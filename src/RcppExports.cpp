@@ -27,23 +27,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// widekernelpls_rcpp
-List widekernelpls_rcpp(arma::mat X, arma::mat Y, int ncomp);
-RcppExport SEXP _GeneSPLS_widekernelpls_rcpp(SEXP XSEXP, SEXP YSEXP, SEXP ncompSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type Y(YSEXP);
-    Rcpp::traits::input_parameter< int >::type ncomp(ncompSEXP);
-    rcpp_result_gen = Rcpp::wrap(widekernelpls_rcpp(X, Y, ncomp));
-    return rcpp_result_gen;
-END_RCPP
-}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_GeneSPLS_widekernelpls_fit", (DL_FUNC) &_GeneSPLS_widekernelpls_fit, 6},
-    {"_GeneSPLS_widekernelpls_rcpp", (DL_FUNC) &_GeneSPLS_widekernelpls_rcpp, 3},
     {NULL, NULL, 0}
 };
 

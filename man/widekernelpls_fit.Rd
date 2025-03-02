@@ -4,23 +4,23 @@
 \alias{widekernelpls_fit}
 \title{Wide Kernel PLS Algorithm Implementation}
 \usage{
-widekernelpls_fit(X, Y, ncomp, center = TRUE, tol = 0, maxit = 100L)
+widekernelpls_fit(X, Y, ncomp, center = TRUE, tol = 1e-06, maxit = 100L)
 }
 \arguments{
-\item{X}{The predictor matrix}
+\item{X}{Predictor matrix (n x p), p is the number of predictors}
 
-\item{Y}{The response matrix}
+\item{Y}{Response matrix (n x m), m is the number of responses}
 
 \item{ncomp}{Number of components to extract}
 
 \item{center}{Logical, whether to center X and Y (default: true)}
 
-\item{tol}{Numeric, tolerance used for determining convergence (default: sqrt(machine_eps))}
+\item{tol}{Numeric, tolerance used for determining convergence (default: 1e-6)}
 
 \item{maxit}{Integer, maximum number of iterations (default: 100)}
 }
 \value{
-A list containing only:
+A list containing:
 \item{coefficients}{The regression coefficients matrix}
 \item{projection}{The projection matrix}
 \item{Xmeans}{The column means of X (if centered)}
@@ -29,4 +29,27 @@ A list containing only:
 \description{
 This function implements the wide kernel PLS algorithm as described by
 Rannar et al. (1994). It's optimized for datasets with more variables than observations.
+}
+\examples{
+
+set.seed(815)
+
+# Simulating high-dimensional predictor matrix (p >> n)
+n <- 10   # Number of observations
+p <- 20  # Number of predictors
+
+X <- matrix(rnorm(n * p), nrow = n, ncol = p)  # Random normal predictors
+
+# True coefficients: Only first 5 predictors contribute to Y
+beta <- c(rnorm(5, sd = 2), rep(0, p - 5))
+
+# Generating response variable Y with N(0,1) noise
+Y <- X \%*\% beta + rnorm(n)
+
+sim_data <- data.frame(Y = Y, X)
+
+pls_cpp = GeneSPLS::widekernelpls_fit(X, Y, 5, center = FALSE)
+pls_cpp$projection
+pls_cpp$coefficients
+
 }
