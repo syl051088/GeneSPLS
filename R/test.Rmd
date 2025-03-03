@@ -1,6 +1,7 @@
 ```{r Setup}
 library(pls)
 library(GeneSPLS)
+library(microbenchmark)
 
 set.seed(815)
 
@@ -26,14 +27,71 @@ pls_model <- plsr(Y ~ .,
                   ncomp = 5,
                   method = "widekernelpls",
                   validation = "none",
-                  center = FALSE)
+                  center = TRUE)
 
 pls_model$projection
 pls_model$coefficients
 ```
 
 ```{r Rcpp Implementation}
-pls_cpp = widekernelpls_fit(X, Y, 5, center = FALSE)
+pls_cpp = widekernelpls_fit(X, Y, 5, center = TRUE)
 pls_cpp$projection
 pls_cpp$coefficients
+```
+```{r pls outputs comparison}
+# Compare Projection Matrices
+if (all(dim(pls_model$projection) == dim(pls_cpp$projection))) {
+  projection_diff <- max(abs(pls_model$projection - pls_cpp$projection))
+  projection_check <- all.equal(pls_model$projection, pls_cpp$projection, 
+                                tolerance = 1e-6, check.attributes = FALSE)
+} else {
+  projection_diff <- NA
+  projection_check <- FALSE
+  cat("\nWarning: Projection matrices have different dimensions!\n")
+}
+
+# Compare Coefficient Matrices
+if (all(dim(pls_model$coefficients) == dim(pls_cpp$coefficients))) {
+  coeff_diff <- max(abs(pls_model$coefficients - pls_cpp$coefficients))
+  coeff_check <- all.equal(pls_model$coefficients, pls_cpp$coefficients, 
+                           tolerance = 1e-6, check.attributes = FALSE)
+} else {
+  coeff_diff <- NA
+  coeff_check <- FALSE
+  cat("\nWarning: Coefficient matrices have different dimensions!\n")
+}
+
+# Print Results
+cat("\n===== Projection Matrix Comparison =====\n")
+cat("Maximum Absolute Difference =", projection_diff, "\n")
+cat("Equality Check:", projection_check, "\n")
+cat("\n===== Coefficients Matrix Comparison =====\n")
+cat("Maximum Absolute Difference =", coeff_diff, "\n")
+cat("Equality Check:", coeff_check, "\n")
+
+# If differences exist, show warnings
+if (!isTRUE(projection_check)) {
+  cat("\n⚠️ Warning: Projection matrices differ significantly!\n")
+}
+if (!isTRUE(coeff_check)) {
+  cat("\n⚠️ Warning: Coefficient matrices differ significantly!\n")
+}
+
+```
+```{r benchmark}
+benchmark_results <- microbenchmark(
+  plsr_R = plsr(Y ~ ., 
+                data = sim_data, 
+                ncomp = 5, 
+                method = "widekernelpls", 
+                validation = "none",
+                center = TRUE),
+  
+  plsr_Rcpp = widekernelpls_fit(X, Y, 5, center = TRUE),
+  
+  times = 10  # Run 10 times for accuracy
+)
+# Print benchmark results
+cat("\n===== Microbenchmark Results =====\n")
+print(benchmark_results)
 ```
