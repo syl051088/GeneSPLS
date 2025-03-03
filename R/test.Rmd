@@ -38,6 +38,7 @@ pls_cpp = widekernelpls_fit(X, Y, 5, center = TRUE)
 pls_cpp$projection
 pls_cpp$coefficients
 ```
+
 ```{r pls outputs comparison}
 # Compare Projection Matrices
 if (all(dim(pls_model$projection) == dim(pls_cpp$projection))) {
@@ -78,6 +79,7 @@ if (!isTRUE(coeff_check)) {
 }
 
 ```
+
 ```{r benchmark}
 benchmark_results <- microbenchmark(
   plsr_R = plsr(Y ~ ., 
