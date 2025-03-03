@@ -15,8 +15,13 @@ License: MIT + file LICENSE
 Imports: Rcpp (>= 1.0.14)
 LinkingTo: Rcpp, RcppArmadillo
 Suggests: 
+    knitr,
+    pls,
+    rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 RoxygenNote: 7.3.2
 Encoding: UTF-8
 Depends: R (>= 3.5.0)
+VignetteBuilder: knitr
+LazyData: true

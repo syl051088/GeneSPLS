@@ -1,4 +1,5 @@
 #include <RcppArmadillo.h>
+#include <limits>
 // [[Rcpp::depends(RcppArmadillo)]]
 
 using namespace Rcpp;
@@ -53,7 +54,7 @@ List widekernelpls_fit(arma::mat X,
                        arma::mat Y,
                        int ncomp,
                        bool center = true,
-                       double tol = 1e-6,
+                       double tol = 1.5e-8,
                        int maxit = 100) {
   int nobj = X.n_rows;
   int npred = X.n_cols;
@@ -74,15 +75,15 @@ List widekernelpls_fit(arma::mat X,
   if (center) {
     Xmeans = mean(X, 0);
     Ymeans = mean(Y, 0);
-    for (int j = 0; j < npred; j++) X.col(j) -= Xmeans(j);
-    for (int j = 0; j < nresp; j++) Y.col(j) -= Ymeans(j);
+    for (int j = 0; j < npred; ++j) X.col(j) -= Xmeans(j);
+    for (int j = 0; j < nresp; ++j) Y.col(j) -= Ymeans(j);
     }
   
   // Calculate initial cross-product matrices
   mat XXt = X * X.t();
   mat YYt = Y * Y.t();
   
-  for (int a = 0; a < ncomp; a++) {
+  for (int a = 0; a < ncomp; ++a) {
     
     // Avoid problems with negative eigenvalues due to roundoff errors
     mat XXtYYt = XXt * YYt;
@@ -136,12 +137,12 @@ List widekernelpls_fit(arma::mat X,
   
   // Calculate weights
   mat W = X.t() * U;
-  for (int j = 0; j < ncomp; j++)
+  for (int j = 0; j < ncomp; ++j)
     W.col(j) = W.col(j) / sqrt(sum(square(W.col(j)))); // Normalization
   
   // Calculate TT^T(T^TT)^-1
   mat TTtTinv(nobj, ncomp);
-  for (int j = 0; j < ncomp; j++)
+  for (int j = 0; j < ncomp; ++j)
     TTtTinv.col(j) = TT.col(j) / as_scalar(TT.col(j).t() * TT.col(j));
   
   mat P = X.t() * TTtTinv;
@@ -162,12 +163,12 @@ List widekernelpls_fit(arma::mat X,
         PWinv = eye<mat>(ncomp, ncomp);
         vec bidiag(ncomp - 1);
         
-        for (int j = 0; j < ncomp - 1; j++) bidiag(j) = -PW(j, j+1);
+        for (int j = 0; j < ncomp - 1; ++j) bidiag(j) = -PW(j, j+1);
         
-        for (int a = 0; a < ncomp - 1; a++) {
+        for (int a = 0; a < ncomp - 1; ++a) {
           double cumulative = 1.0;
           
-          for (int j = a; j < ncomp - 1; j++) {
+          for (int j = a; j < ncomp - 1; ++j) {
             cumulative *= bidiag(j);
             PWinv(a, j+1) = cumulative;
             }
@@ -183,7 +184,7 @@ List widekernelpls_fit(arma::mat X,
     // B is a 3D array with dimensions [npred, nresp, ncomp]
     cube B(npred, nresp, ncomp);
     
-    for (int a = 0; a < ncomp; a++) {
+    for (int a = 0; a < ncomp; ++a) {
       // Use only the first a+1 components
       B.slice(a) = R.cols(0, a) * Q.cols(0, a).t();
       }
@@ -194,7 +195,7 @@ List widekernelpls_fit(arma::mat X,
       Named("Xmeans") = Xmeans,
       Named("Ymeans") = Ymeans
     );
-    }
+  }
 
 // [OLD] Wide Kernel Partial Least Squares (PLS) Implementation
 List widekernelpls_rcpp(arma::mat X, arma::mat Y, int ncomp) {

@@ -45,7 +45,7 @@
 #' pls_cpp$coefficients
 #'
 #' @export
-widekernelpls_fit <- function(X, Y, ncomp, center = TRUE, tol = 1e-6, maxit = 100L) {
+widekernelpls_fit <- function(X, Y, ncomp, center = TRUE, tol = 1.5e-8, maxit = 100L) {
     .Call(`_GeneSPLS_widekernelpls_fit`, X, Y, ncomp, center, tol, maxit)
 }
 
