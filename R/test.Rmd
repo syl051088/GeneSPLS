@@ -71,10 +71,10 @@ cat("Equality Check:", coeff_check, "\n")
 
 # If differences exist, show warnings
 if (!isTRUE(projection_check)) {
-  cat("\n⚠️ Warning: Projection matrices differ significantly!\n")
+  cat("\nWarning: Projection matrices differ significantly!\n")
 }
 if (!isTRUE(coeff_check)) {
-  cat("\n⚠️ Warning: Coefficient matrices differ significantly!\n")
+  cat("\nWarning: Coefficient matrices differ significantly!\n")
 }
 
 ```
