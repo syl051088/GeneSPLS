@@ -97,6 +97,7 @@ benchmark_results <- microbenchmark(
 cat("\n===== Microbenchmark Results =====\n")
 print(benchmark_results)
 ```
+
 ```{r p>>n data}
 set.seed(815)
 
@@ -130,5 +131,56 @@ results = bench::mark(
 
 print(results)
 plot(results)
+```
+
+```{r p>>n multivariate outcome data}
+set.seed(699)
+
+# Simulating high-dimensional predictor matrix (p >> n)
+n <- 20    # Number of observations
+p <- 10000 # Number of predictors
+m <- 1000    # Number of response variables (multivariate Y)
+
+X <- matrix(rnorm(n * p), nrow = n, ncol = p)  # Random normal predictors
+
+# True coefficients: Only first 5 predictors contribute to each Y
+beta <- matrix(0, nrow = p, ncol = m)  # Initialize coefficient matrix
+beta[1:5, ] <- matrix(rnorm(5 * m, sd = 2), nrow = 5, ncol = m)  # First 5 predictors are meaningful
+
+# Generating multivariate response Y with Gaussian noise
+Y <- X %*% beta + matrix(rnorm(n * m), nrow = n, ncol = m)  
+
+sim_data <- as.data.frame(cbind(Y, X))  
+colnames(sim_data) <- c(paste0("Y", 1:m), paste0("X", 1:p))
+```
+
+```{r benchmark3}
+time_plsr_widekernel <- system.time({
+  plsr_model <- plsr(as.matrix(sim_data[, 1:m]) ~ ., 
+                     data = sim_data, 
+                     ncomp = 5, 
+                     method = "widekernelpls", 
+                     validation = "none",
+                     center = TRUE)
+})
+time_plsr_simpls <- system.time({
+  plsr_model <- plsr(as.matrix(sim_data[, 1:m]) ~ ., 
+                     data = sim_data, 
+                     ncomp = 5, 
+                     method = "simpls", 
+                     validation = "none",
+                     center = TRUE)
+})
+time_rcpp <- system.time({
+  pls_cpp <- widekernelpls_fit(X, Y, 5, center = TRUE)
+})
+
+cat("\n===== Computation Time Comparison (system.time) =====\n")
+cat("R (plsr) Wide Kernel Execution Time:\n")
+print(time_plsr_widekernel)
+cat("R (plsr) SIMPLS Execution Time:\n")
+print(time_plsr_simpls)
+cat("nRcpp Execution Time:\n")
+print(time_rcpp)
 ```
 
