@@ -67,7 +67,7 @@ List spls_cpp(arma::mat X, arma::mat Y, int K, double eta, double kappa = 0.5,
   // Also store the final active set (cumulative A) in an arma::uvec
   arma::uvec finalActiveSet;
 
-  for (int k = 0; k < K; k++) {
+  for (int k = 0; k < K; ++k) {
 
     // Compute Z = X'Y
     arma::mat Z = X1.t() * Y1;

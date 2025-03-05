@@ -57,7 +57,7 @@ arma::vec spls_dv(const arma::mat& Z, double eta, double kappa, double eps, int 
       // Calculate discrepancy and update iteration count
       dis = as_scalar(max(abs(c - c_old)));
       c_old = c;
-      i++;
+      ++i;
     }
   } else if(kappa > 0 && kappa < 0.5) {  // Solve for 0 < kappa < 0.5
     double kappa2 = (1 - kappa) / (1 - 2 * kappa);
@@ -95,7 +95,7 @@ arma::vec spls_dv(const arma::mat& Z, double eta, double kappa, double eps, int 
 
       dis = as_scalar(max(abs(c - c_old)));
       c_old = c;
-      i++;
+      ++i;
     }
   }
 
