@@ -15,7 +15,7 @@ widekernelpls_fit(X, Y, ncomp, center = TRUE, tol = 1.5e-08, maxit = 100L)
 
 \item{center}{Logical, whether to center X and Y (default: true)}
 
-\item{tol}{Numeric, tolerance used for determining convergence (default: 1e-6)}
+\item{tol}{Numeric, tolerance used for determining convergence (default: 1.5e-8)}
 
 \item{maxit}{Integer, maximum number of iterations (default: 100)}
 }
@@ -46,7 +46,6 @@ beta <- c(rnorm(5, sd = 2), rep(0, p - 5))
 # Generating response variable Y with N(0,1) noise
 Y <- X \%*\% beta + rnorm(n)
 
-sim_data <- data.frame(Y = Y, X)
 
 pls_cpp = GeneSPLS::widekernelpls_fit(X, Y, 5, center = FALSE)
 pls_cpp$projection

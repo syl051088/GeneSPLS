@@ -29,7 +29,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // widekernelpls_fit
-List widekernelpls_fit(arma::mat X, arma::mat Y, int ncomp, bool center, double tol, int maxit);
+Rcpp::List widekernelpls_fit(arma::mat X, arma::mat Y, int ncomp, bool center, double tol, int maxit);
 RcppExport SEXP _GeneSPLS_widekernelpls_fit(SEXP XSEXP, SEXP YSEXP, SEXP ncompSEXP, SEXP centerSEXP, SEXP tolSEXP, SEXP maxitSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -45,13 +45,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // spls_cpp
-List spls_cpp(arma::mat X, arma::mat Y, int K, double eta, double kappa, std::string select, std::string fit, bool scale_x, bool scale_y, double eps, int maxstep, bool trace);
-RcppExport SEXP _GeneSPLS_spls_cpp(SEXP XSEXP, SEXP YSEXP, SEXP KSEXP, SEXP etaSEXP, SEXP kappaSEXP, SEXP selectSEXP, SEXP fitSEXP, SEXP scale_xSEXP, SEXP scale_ySEXP, SEXP epsSEXP, SEXP maxstepSEXP, SEXP traceSEXP) {
+Rcpp::List spls_cpp(arma::mat x, arma::mat y, int K, double eta, double kappa, std::string select, std::string fit, bool scale_x, bool scale_y, double eps, int maxstep, bool trace);
+RcppExport SEXP _GeneSPLS_spls_cpp(SEXP xSEXP, SEXP ySEXP, SEXP KSEXP, SEXP etaSEXP, SEXP kappaSEXP, SEXP selectSEXP, SEXP fitSEXP, SEXP scale_xSEXP, SEXP scale_ySEXP, SEXP epsSEXP, SEXP maxstepSEXP, SEXP traceSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type x(xSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type y(ySEXP);
     Rcpp::traits::input_parameter< int >::type K(KSEXP);
     Rcpp::traits::input_parameter< double >::type eta(etaSEXP);
     Rcpp::traits::input_parameter< double >::type kappa(kappaSEXP);
@@ -62,7 +62,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type eps(epsSEXP);
     Rcpp::traits::input_parameter< int >::type maxstep(maxstepSEXP);
     Rcpp::traits::input_parameter< bool >::type trace(traceSEXP);
-    rcpp_result_gen = Rcpp::wrap(spls_cpp(X, Y, K, eta, kappa, select, fit, scale_x, scale_y, eps, maxstep, trace));
+    rcpp_result_gen = Rcpp::wrap(spls_cpp(x, y, K, eta, kappa, select, fit, scale_x, scale_y, eps, maxstep, trace));
     return rcpp_result_gen;
 END_RCPP
 }
