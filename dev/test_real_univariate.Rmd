@@ -1,0 +1,157 @@
+---
+title: "Sparse Partial Least Squares (SPLS) for Real Individual-level Gene Expression (Univariate Outcome) Data Analysis"
+author: "StatGPT"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+## Introduction
+
+This document demonstrates how to apply Sparse Partial Least Squares (SPLS) regression to real individual-level gene expression (univariate outcome) data in R.\
+SPLS is particularly useful for high-dimensional datasets where the number of predictors (SNPs) far exceeds the number of individuals.
+
+We will: 1. Load and filter the real genotype and expression data (specifically only the gene expression level for AKT3). 2. Tune candidate parameters using cross-validation (cv_spls_cpp()). 3. Fit SPLS regression models using both the original R function (`spls()`) and the Rcpp version (`spls_cpp()`). 4. Compare the outputs from both implementations to ensure consistency. 5. Benchmark the performance of the two functions.
+
+------------------------------------------------------------------------
+
+## Step 1: Load Real Data and Preprocess
+
+We load the genotype matrix (stored as an RDS file) and the AKT3 gene expression data (from a CSV). We also ensure that the subject order matches and filter SNPs based on a standard deviation threshold.
+
+```{r load-data, echo=TRUE}
+# Load real data
+X <- readRDS("/home/yangtai/BIOSTAT815_Project/genotype_matrix.rds")
+Y <- read.csv("/home/yangtai/BIOSTAT815_Project/akt3_expression.csv", stringsAsFactors = FALSE)
+
+# Check dimensions and data meaning
+cat("Number of subjects in Y:", nrow(Y), "\n")
+cat("Y represents AKT3 gene expression levels across individuals.\n")
+cat("Dimensions of X (individuals x SNPs):", dim(X)[1], "x", dim(X)[2], "\n")
+cat("X represents SNP genotype data (rows = individuals, columns = SNPs).\n")
+
+# Ensure subject order matches between Y and X
+if (!identical(Y$Subject, rownames(X))) {
+  stop("Mismatch in subject order! Check data consistency.")
+} else {
+  cat("Subjects are correctly matched. Proceeding with analysis...\n")
+}
+
+# Filter SNPs based on standard deviation threshold
+snp_sd <- apply(X, 2, sd, na.rm = TRUE)
+threshold_sd <- 0.2  # Adjust threshold as needed based on data distribution
+keep_snps <- snp_sd > threshold_sd
+cat("Number of SNPs before filtering:", ncol(X), "\n")
+cat("Number of SNPs after filtering:", sum(keep_snps), "\n")
+X <- X[, keep_snps]
+cat("Dimensions of filtered X:", dim(X)[1], "x", dim(X)[2], "\n")
+AKT3_Expression <- matrix(Y$AKT3_Expression, ncol = 1)
+```
+
+------------------------------------------------------------------------
+
+## Step 2: Cross-validation Parameter Tuning
+
+We tune the candidate parameters for sparsity (eta) and the number of latent components (K) using the Rcpp function cv_spls_cpp() function (with 'fold = 5' and 'trace = FALSE').
+
+```{r cross-validation, echo=TRUE}
+set.seed(226)
+# Define candidate parameters
+eta_candidates <- seq(0.95, 0.99, by = 0.01)
+K_candidates <- 1:10
+
+# Run cv.spls() for tuning
+cv_result <- cv_spls_cpp(X, AKT3_Expression, fold = 5, eta = eta_candidates, K = K_candidates,
+                             kappa = 0.5, select = "pls2", scale_x = TRUE, scale_y = FALSE,
+                             eps = 1e-4, maxstep = 100, trace = FALSE)
+best_eta <- cv_result$eta.opt
+best_K <- cv_result$K.opt
+
+cat("Optimal eta:", best_eta, "\n")
+cat("Optimal K:", best_K, "\n")
+```
+
+------------------------------------------------------------------------
+
+## Step 3: Fitting SPLS Regression Models
+
+We fit SPLS regression models using both the original R function (`spls()`) and the Rcpp version (`spls_cpp()`), using the optimal parameters obtained from cross-validation.
+
+```{r fit-spls, echo=TRUE}
+# Fit SPLS model using the original R function
+spls_model_r <- spls(X, AKT3_Expression, K = best_K, eta = best_eta, fit = "widekernelpls")
+
+# Fit SPLS model using the Rcpp version
+spls_model_cpp <- spls_cpp(X, AKT3_Expression, K = best_K, eta = best_eta, kappa = 0.5, 
+                           select = "pls2", fit = "widekernelpls", scale_x = TRUE, scale_y = FALSE,
+                           eps = 1e-4, maxstep = 100, trace = FALSE)
+
+# Extract coefficient matrices
+coef_r <- coef(spls_model_r)
+coef_cpp <- spls_model_cpp$betahat
+```
+
+------------------------------------------------------------------------
+
+## Step 4: Comparing Model Outputs
+
+We compare the two models by verifying that the SNPs selected (non-zero coefficients) are identical and that the corresponding coefficient values are the same within a specified tolerance. The script also extracts those selected SNPs along with their important info from spls_cpp() outputs (e.g. the coefficients) abd store them in a dataframe "Key_SNPs"
+
+```{r compare-models, echo=TRUE}
+# Identify non-zero coefficient indices
+nonzero_idx_r <- which(coef_r != 0)
+nonzero_idx_cpp <- which(coef_cpp != 0)
+
+cat("Number of non-zero coefficients (R version):", length(nonzero_idx_r), "\n")
+cat("Number of non-zero coefficients (Rcpp version):", length(nonzero_idx_cpp), "\n")
+
+# Check if the selected SNPs (non-zero coefficient indices) match exactly
+if(identical(nonzero_idx_r, nonzero_idx_cpp)) {
+  cat("Selected SNPs (non-zero coefficient indices) are identical between the two models.\n")
+  
+  # Compare corresponding coefficients within a tolerance threshold
+  tolerance <- 1e-6
+  differences <- abs(coef_r[nonzero_idx_r] - coef_cpp[nonzero_idx_r])
+  max_difference <- max(differences)
+  
+  if(max_difference < tolerance) {
+    cat("All corresponding coefficients are equal within a tolerance of", tolerance, "\n")
+  } else {
+    cat("Warning: Maximum difference in corresponding coefficients is", max_difference,
+        "which exceeds the tolerance of", tolerance, "\n")
+  }
+  
+} else {
+  cat("Warning: The selected SNPs (non-zero coefficient indices) differ between the two models.\n")
+  
+  # Report differences in indices
+  diff_in_r <- setdiff(nonzero_idx_r, nonzero_idx_cpp)
+  diff_in_cpp <- setdiff(nonzero_idx_cpp, nonzero_idx_r)
+  
+  if(length(diff_in_r) > 0) {
+    cat("Indices present in R version but not in Rcpp version:", diff_in_r, "\n")
+  }
+  if(length(diff_in_cpp) > 0) {
+    cat("Indices present in Rcpp version but not in R version:", diff_in_cpp, "\n")
+  }
+}
+
+```
+
+------------------------------------------------------------------------
+
+## Step 5: Benchmarking the Two Functions
+
+Finally, we benchmark the performance of the two SPLS implementations using the `microbenchmark` package.
+
+```{r benchmarking, echo=TRUE, warning=FALSE, message=FALSE}
+library(microbenchmark)
+set.seed(777)
+benchmark_results <- microbenchmark(
+  spls_R = spls(X, AKT3_Expression, K = best_K, eta = best_eta, fit = "widekernelpls"),
+  spls_CPP = spls_cpp(X, AKT3_Expression, K = best_K, eta = best_eta, kappa = 0.5, 
+                      select = "pls2", fit = "widekernelpls", scale_x = TRUE, scale_y = FALSE,
+                      eps = 1e-4, maxstep = 100, trace = FALSE),
+  times = 20
+)
+print(benchmark_results)
+```

@@ -1,0 +1,196 @@
+---
+title: "Sparse Partial Least Squares (SPLS) for Simulated Individual-level Gene Expression (Multivariate Outcome) Data Analysis"
+author: "StatGPT"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+## Introduction
+
+This document demonstrates how to apply Sparse Partial Least Squares (SPLS) regression to simulated individual-level gene expression data with a multivariate outcome in R.  
+In this analysis, the outcome consists of 5 gene expression values per subject (randomly selected from the full simulated gene expression data), while the predictors are simulated SNP genotypes.  
+SPLS is particularly useful for high-dimensional data where the number of predictors far exceeds the number of individuals.
+
+We will:
+1. Simulate genotype data and full gene expression data.
+2. Randomly select 5 genes to serve as the multivariate outcome.
+3. Tune candidate parameters using cross-validation with `cv_spls_cpp()`.
+4. Fit SPLS regression models using both the original R function (`spls()`) and the Rcpp version (`spls_cpp()`).
+5. Compare the outputs from both implementations to ensure consistency and extract key SNP information.
+6. Benchmark the performance of the two SPLS implementations using the `microbenchmark` package.
+
+------------------------------------------------------------------------
+
+## Step 1: Simulate Data and Preprocess
+
+We simulate a genotype matrix for 373 individuals and 3,000 SNPs. SNP genotypes are simulated by sampling from {0,1,2} with probabilities reflecting a typical minor allele frequency distribution.  
+We also simulate a full gene expression matrix for 373 individuals and 500 genes. For gene expression, we assume a log-normal distribution (after exponentiating normal random values) to mimic realistic expression levels.  
+Finally, we randomly select 3 genes (with seed set for reproducibility) to serve as the multivariate outcome.
+
+```{r simulate-data, echo=TRUE, message=FALSE, warning=FALSE}
+set.seed(199)
+
+# Simulation parameters
+n <- 373       # Number of individuals
+p <- 3000     # Number of SNPs
+N <- 500     # Total number of genes in the expression data
+
+# Simulate genotype data:
+# We simulate SNPs by sampling from 0, 1, 2. Here, we generate minor allele frequencies from a Beta distribution.
+maf <- rbeta(p, 1, 3)  # skewed towards low frequency
+# For each SNP, generate genotypes with probabilities based on Hardy-Weinberg equilibrium:
+genotype_prob <- t(sapply(maf, function(m) {
+  c((1 - m)^2, 2 * m * (1 - m), m^2)
+}))
+# Create genotype matrix by sampling for each SNP (columns) and individual (rows)
+X <- matrix(NA, nrow = n, ncol = p)
+for (j in 1:p) {
+  X[, j] <- sample(0:2, n, replace = TRUE, prob = genotype_prob[j, ])
+}
+# Assign SNP IDs as column names and simulate subject IDs as row names
+colnames(X) <- paste0("SNP_", 1:p)
+rownames(X) <- paste0("Subject_", 1:n)
+
+# ----------------------------
+# Filter SNPs based on standard deviation threshold
+# Here, we set the threshold as the first quantile of the snp_sd distribution.
+# ----------------------------
+snp_sd <- apply(X, 2, sd, na.rm = TRUE)
+threshold_sd <- quantile(snp_sd, 0.25)  # first quantile of the snp_sd distribution
+keep_snps <- snp_sd > threshold_sd
+cat("Number of SNPs before filtering:", ncol(X), "\n")
+cat("Number of SNPs after filtering:", sum(keep_snps), "\n")
+X <- X[, keep_snps]
+cat("Dimensions of filtered X:", dim(X)[1], "x", dim(X)[2], "\n")
+
+# Simulate full gene expression data:
+# Assume that log-expression levels are normally distributed, then exponentiate to simulate expression values.
+full_expr_log <- matrix(rnorm(n * N, mean = 5, sd = 1), nrow = n, ncol = N)
+# Optionally, exponentiate if you want strictly positive expression levels, or keep as is.
+gene_expr_full <- exp(full_expr_log)
+# Assign gene names as column names and ensure row names match genotype data.
+colnames(gene_expr_full) <- paste0("Gene_", 1:N)
+rownames(gene_expr_full) <- paste0("Subject_", 1:n)
+
+# ----------------------------
+# Create Multivariate Outcome:
+# Randomly select 5 genes from the full gene expression matrix.
+# Set seed for reproducibility.
+# ----------------------------
+set.seed(296)
+num_outcome_genes <- 380
+all_genes <- colnames(gene_expr_full)
+selected_genes <- sample(all_genes, num_outcome_genes, replace = FALSE)
+Y <- gene_expr_full[, selected_genes, drop = FALSE]
+cat("Dimensions of multivariate outcome Y:", dim(Y)[1], "x", dim(Y)[2], "\n")
+```
+
+------------------------------------------------------------------------
+
+## Step 2: Cross-validation Parameter Tuning
+
+We tune candidate parameters for sparsity (eta) and the number of latent components (K) using the Rcpp function `cv_spls_cpp()`. Here, we use a 5-fold CV and set trace to FALSE.
+
+```{r cross-validation, echo=TRUE}
+set.seed(219)
+# Define candidate parameters
+eta_candidates <- seq(0.95, 0.99, by = 0.01)
+K_candidates <- 1:10
+
+# Run cv_spls_cpp() for tuning using the multivariate outcome Y
+cv_result <- suppressWarnings(
+  cv_spls_cpp(X, Y, fold = 5, eta = eta_candidates, K = K_candidates,
+              kappa = 0.5, select = "pls2", scale_x = TRUE, scale_y = FALSE,
+              eps = 2e-3, maxstep = 10000, trace = FALSE)
+)
+best_eta <- cv_result$eta.opt
+best_K <- cv_result$K.opt
+
+cat("Optimal eta:", best_eta, "\n")
+cat("Optimal K:", best_K, "\n")
+```
+
+------------------------------------------------------------------------
+
+## Step 3: Fitting SPLS Regression Models
+
+We fit SPLS regression models using both the original R function `spls()` and the Rcpp version `spls_cpp()`, using the multivariate outcome Y and the optimal parameters from CV tuning.
+
+```{r fit-spls, echo=TRUE}
+# Fit SPLS model using the original R function
+spls_model_r <- spls(X, Y, K = best_K, eta = best_eta, fit = "widekernelpls")
+
+# Fit SPLS model using the Rcpp version
+spls_model_cpp <- spls_cpp(X, Y, K = best_K, eta = best_eta, kappa = 0.5, 
+                           select = "pls2", fit = "widekernelpls", scale_x = TRUE, scale_y = FALSE,
+                           eps = 1e-4, maxstep = 100, trace = FALSE)
+
+# Extract coefficient matrices
+coef_r <- coef(spls_model_r)
+coef_cpp <- spls_model_cpp$betahat
+```
+
+------------------------------------------------------------------------
+
+## Step 4: Comparing Model Outputs
+
+We compare the two models by verifying that the SNPs selected (non-zero coefficients) are identical and that the corresponding coefficient values are equal within a specified tolerance.
+
+```{r compare-models, echo=TRUE}
+# Identify non-zero coefficient indices
+nonzero_idx_r <- which(coef_r != 0)
+nonzero_idx_cpp <- which(coef_cpp != 0)
+
+cat("Number of non-zero coefficients (R version):", length(nonzero_idx_r), "\n")
+cat("Number of non-zero coefficients (Rcpp version):", length(nonzero_idx_cpp), "\n")
+
+# Check if the selected SNPs (non-zero coefficient indices) match exactly
+if(identical(nonzero_idx_r, nonzero_idx_cpp)) {
+  cat("Selected SNPs (non-zero coefficient indices) are identical between the two models.\n")
+  
+  # Compare corresponding coefficients within a tolerance threshold
+  tolerance <- 1e-6
+  differences <- abs(coef_r[nonzero_idx_r] - coef_cpp[nonzero_idx_r])
+  max_difference <- max(differences)
+  
+  if(max_difference < tolerance) {
+    cat("All corresponding coefficients are equal within a tolerance of", tolerance, "\n")
+  } else {
+    cat("Warning: Maximum difference in corresponding coefficients is", max_difference,
+        "which exceeds the tolerance of", tolerance, "\n")
+  }
+  
+} else {
+  cat("Warning: The selected SNPs (non-zero coefficient indices) differ between the two models.\n")
+  
+  # Report differences in indices
+  diff_in_r <- setdiff(nonzero_idx_r, nonzero_idx_cpp)
+  diff_in_cpp <- setdiff(nonzero_idx_cpp, nonzero_idx_r)
+  
+  if(length(diff_in_r) > 0) {
+    cat("Indices present in R version but not in Rcpp version:", diff_in_r, "\n")
+  }
+  if(length(diff_in_cpp) > 0) {
+    cat("Indices present in Rcpp version but not in R version:", diff_in_cpp, "\n")
+  }
+}
+```
+
+------------------------------------------------------------------------
+
+## Step 5: Benchmarking the Two Functions
+
+We benchmark the performance of the two SPLS implementations using the `microbenchmark` package.
+
+```{r benchmarking, echo=TRUE, warning=FALSE, message=FALSE}
+library(microbenchmark)
+set.seed(779)
+benchmark_results <- microbenchmark(
+  spls_R = spls(X, Y, K = best_K, eta = best_eta, fit = "widekernelpls"),
+  spls_CPP = spls_cpp(X, Y, K = best_K, eta = best_eta, kappa = 0.5, 
+                      select = "pls2", fit = "widekernelpls", scale_x = TRUE, scale_y = FALSE,
+                      eps = 1e-4, maxstep = 100, trace = FALSE),
+  times = 20
+)
+print(benchmark_results)
+```
