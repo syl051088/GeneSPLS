@@ -28,6 +28,10 @@ You can install the development version of GeneSPLS from [GitHub](https://github
 # install.packages("pak")
 pak::pak("syl051088/GeneSPLS")
 ```
+## Main functions
+
+- `spls_cpp()`: The main function for fitting SPLS regression models using Rcpp.
+- `cv_spls_cpp()`: The main function for tuning SPLS regression model parameters using cross-validation.
 
 ## Example
 
