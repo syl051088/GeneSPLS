@@ -27,11 +27,11 @@ Y = X B_{PLS} + F,
 }
 $$
 
-where:
-- \(X\) is the \(n \times p\) predictor matrix (SNP genotypes),
-- \(Y\) is the \(n \times q\) response matrix (gene expression),
-- \(B_{PLS}\) is the matrix of regression coefficients,
-- \(F\) represents the residual errors.
+where:  
+- $X$ is the $n \times p$ predictor matrix (SNP genotypes),  
+- $Y$ is the $n \times q$ response matrix (gene expression),  
+- $B_{PLS}$ is the matrix of regression coefficients,  
+- $F$ represents the residual errors.
 
 For the sparse formulation, we solve an optimization problem that imposes an \(L_1\) penalty to encourage sparsity in the direction vectors. A generalized formulation is:
 
@@ -41,7 +41,7 @@ $$
 }
 $$
 
-where \(M = X^TYY^TX\), and \(\kappa\), \(\lambda_1\), and \(\lambda_2\) are tuning parameters. Cross-validation (via `cv_spls_cpp`) is used to determine the optimal values for the sparsity (typically through the candidate eta values) and the number of latent components \(K\).
+where $M = X^T Y Y^T X$, and $\\kappa$, $\\lambda_1$, and $\\lambda_2$ are tuning parameters. Cross-validation (via `cv_spls_cpp`) is used to determine the optimal values for the sparsity (typically through the candidate eta values) and the number of latent components $K$.
 
 This formulation combines dimension reduction with variable selection, allowing the model to focus on the most relevant genetic variants driving gene expression differences.
 
