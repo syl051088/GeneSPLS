@@ -138,7 +138,7 @@ This project is licensed under the [GNU General Public License v3.0](https://www
 
 For questions, bug reports, or suggestions, please reach out to the project maintainer:
 
-- **Developer/Maintainer:** Tai Yang
+- **Developer/Maintainer:** StatGPT
 - **GitHub:** [syl051088/GeneSPLS](https://github.com/syl051088/GeneSPLS)
 
 ## References
