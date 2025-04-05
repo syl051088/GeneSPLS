@@ -20,7 +20,45 @@ This repository includes:
 
 The central research question addressed by this project is: **Which genomic variants (SNPs) are significantly associated with gene expression differences, and how can we effectively identify these associations using a sparse dimension reduction approach?** By employing SPLS regression, we aim to reduce the high dimensionality inherent in genomic data while simultaneously selecting the most relevant variables, thereby enhancing the interpretability and predictive performance in eQTL analyses. Special attention is given to key genes such as AKT3, providing insights into their regulatory mechanisms.
 
-### Mathematical Formulation
+## Geuvadis Consortium: Background and Dataset Overview
+
+The **Geuvadis Consortium** (short for *Genetic EUropean VAriation in DISease*) was an EU-funded research collaboration launched in 2010, aimed at exploring how genetic variation impacts gene expression and human disease ([Sharing capacity across Europe in high-throughput sequencing technology to explore genetic variation in health and disease | GEUVADIS | Project | News & Multimedia | FP7 | CORDIS | European Commission](https://cordis.europa.eu/project/id/261123/reporting/de#:~:text=between%20a%20wide%20range%20of,the%20Consortium%20has%20obtained%20high)).
+
+### Geuvadis Dataset Characteristics
+
+One of the major outcomes of Geuvadis is a **large-scale reference dataset** integrating genomic and transcriptomic information. This dataset is widely used in human genomics as it provides a rich resource for studying **expression quantitative trait loci (eQTLs)** and gene regulation. Key features of the Geuvadis dataset include:
+
+- **Cohort Size & Populations:** The project profiled **≈465 individuals** (after quality control, 462 remained) drawn from **five distinct populations** ([
+            Transcriptome and genome sequencing uncovers functional variation in humans - PMC
+        ](https://pmc.ncbi.nlm.nih.gov/articles/PMC3918453/#:~:text=We%20performed%20mRNA%20and%20small,%C3%97%2010%E2%88%9216%20for%20mRNA%2C%20p)). These populations were the CEPH Utah residents (**CEU**), Finns (**FIN**), British (**GBR**), Toscani Italians (**TSI**), and Yoruba Nigerians (**YRI**), with roughly 89–95 individuals per group ([
+            Transcriptome and genome sequencing uncovers functional variation in humans - PMC
+        ](https://pmc.ncbi.nlm.nih.gov/articles/PMC3918453/#:~:text=We%20performed%20mRNA%20and%20small,%C3%97%2010%E2%88%9216%20for%20mRNA%2C%20p)). Notably, these were a subset of the 1000 Genomes Project samples, meaning each participant had well-characterized genetic backgrounds ([
+            Transcriptome and genome sequencing uncovers functional variation in humans - PMC
+        ](https://pmc.ncbi.nlm.nih.gov/articles/PMC3918453/#:~:text=In%20this%20study%2C%20we%20characterize,properties%20of%20causal%20functional%20variants)) ([
+            Editors’ pick: transcriptomes of 1000 genomes - PMC
+        ](https://pmc.ncbi.nlm.nih.gov/articles/PMC3831822/#:~:text=time%2C%20used%20the%20full%20capacity,Italians%2C%20and%20Yoruba%20from%20Nigeria)).
+
+- **Tissue Source:** All gene expression measurements were performed on **lymphoblastoid cell lines (LCLs)**. These LCLs are immortalized cell lines derived from participants’ blood, providing a consistent *in vitro* tissue across all individuals ([
+            Transcriptome and genome sequencing uncovers functional variation in humans - PMC
+        ](https://pmc.ncbi.nlm.nih.gov/articles/PMC3918453/#:~:text=We%20performed%20mRNA%20and%20small,%C3%97%2010%E2%88%9216%20for%20mRNA%2C%20p)). Focusing on a single cell type ensured that differences observed were due to genetic and regulatory variation rather than different tissues.
+
+- **Data Types:** Geuvadis generated **whole transcriptome RNA sequencing (RNA-seq)** data for each individual, including both messenger RNA (mRNA) and microRNA (**miRNA**) profiles ([
+            Transcriptome and genome sequencing uncovers functional variation in humans - PMC
+        ](https://pmc.ncbi.nlm.nih.gov/articles/PMC3918453/#:~:text=understanding%20the%20genetic%20basis%20of,to%20infer%20putative%20causal%20variants)) ([
+            Transcriptome and genome sequencing uncovers functional variation in humans - PMC
+        ](https://pmc.ncbi.nlm.nih.gov/articles/PMC3918453/#:~:text=We%20performed%20mRNA%20and%20small,%C3%97%2010%E2%88%9216%20for%20mRNA%2C%20p)). In total, high-throughput sequencing was done for both **mRNA** (capturing gene expression levels and splicing) and **small RNA** (capturing miRNA expression) from each sample. Complementing the RNA-seq, **genotype data** for each individual were obtained from the 1000 Genomes project or high-density SNP arrays ([
+            Transcriptome and genome sequencing uncovers functional variation in humans - PMC
+        ](https://pmc.ncbi.nlm.nih.gov/articles/PMC3918453/#:~:text=%28TSI%29%20and%20Yoruba%20%28YRI%29,coding%20and)). In fact, 421 of the 462 individuals had full genome sequences available (Phase 1 of 1000 Genomes), and the remainder’s genotypes were imputed from SNP chips ([
+            Transcriptome and genome sequencing uncovers functional variation in humans - PMC
+        ](https://pmc.ncbi.nlm.nih.gov/articles/PMC3918453/#:~:text=%28TSI%29%20and%20Yoruba%20%28YRI%29,coding%20and)). This provided a complete genomic variation map alongside the expression data. The combination of **paired genetic and expression data** in multiple populations made the Geuvadis dataset extremely valuable for eQTL mapping and integrative analyses ([
+            Editors’ pick: transcriptomes of 1000 genomes - PMC
+        ](https://pmc.ncbi.nlm.nih.gov/articles/PMC3831822/#:~:text=Altogether%2C%20Lappalainen%20et%20al,The%20authors%20concluded%20that%20in)).
+
+### Relation to the GeneSPLS Project
+
+The **GeneSPLS project** utilizes data from Geuvadis, effectively leveraging a *subset* of this larger consortium dataset for its analyses. In practice, this means that GeneSPLS did not collect new experimental data but rather uses the existing Geuvadis resource (for example, the gene expression levels and corresponding genotypes for a selection of **373 overlapping individuals**) as input to its models. By drawing on a portion of Geuvadis data, GeneSPLS can demonstrate and validate its methodology on real human genomic data while benefiting from the rigorous quality control and population diversity of the Geuvadis project. It should be emphasized that any results or figures in GeneSPLS are grounded in the Geuvadis dataset – a well-established reference. 
+
+## Mathematical Formulation
 
 The underlying PLS regression model is defined as:
   
