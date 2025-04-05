@@ -10,13 +10,15 @@
 
 In this project, we utilize source data from the **Geuvadis consortium**, which provides an extensive collection of RNA-seq gene expression data and corresponding high-density genotype information from European populations. The dataset encompasses expression levels for thousands of genes across multiple individuals, allowing for the exploration of genetic regulation mechanisms. Our data preprocessing scripts harmonize and integrate these datasets to create both univariate and multivariate outcome matrices for analysis.
 
-The central research question addressed by this project is: **Which genomic variants (SNPs) are significantly associated with gene expression differences, and how can we effectively identify these associations using a sparse dimension reduction approach?** By employing SPLS regression, we aim to reduce the high dimensionality inherent in genomic data while simultaneously selecting the most relevant variables, thereby enhancing the interpretability and predictive performance in eQTL analyses. Special attention is given to key genes such as AKT3, providing insights into their regulatory mechanisms.
-
 This repository includes:
 
 - **Simulated Data Analyses:** Two R Markdown files (`test_simulated_univariate.Rmd` and `test_simulated_multivariate.Rmd`) that demonstrate SPLS regression using simulated datasets. These scripts showcase both univariate and multivariate outcome scenarios.
 - **Real Data Analyses:** Two R Markdown files (`test_real_univariate.Rmd` and `test_real_multivariate.Rmd`) that apply SPLS regression to real genomic data. For the real data, gene expression (including AKT3 expression) and genotype data (from the Geuvadis consortium) are pre-processed, tuned, and analyzed.
 - **Efficient Implementation:** A collection of C++ source files (via Rcpp) that implement the core algorithms, including cross-validation (`cv_spls_cpp`) and the main SPLS function (`spls_cpp`). The algorithms are inspired by the kernel-based PLS methodology (see Rännär et al., 1994) and further enhanced to incorporate sparsity following ideas from Chun and Keles (2010).
+
+### Primary Purpose
+
+The central research question addressed by this project is: **Which genomic variants (SNPs) are significantly associated with gene expression differences, and how can we effectively identify these associations using a sparse dimension reduction approach?** By employing SPLS regression, we aim to reduce the high dimensionality inherent in genomic data while simultaneously selecting the most relevant variables, thereby enhancing the interpretability and predictive performance in eQTL analyses. Special attention is given to key genes such as AKT3, providing insights into their regulatory mechanisms.
 
 ### Mathematical Formulation
 
