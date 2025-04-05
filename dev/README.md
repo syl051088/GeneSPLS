@@ -5,6 +5,7 @@
 ## Description
 
 <div align="justify">
+
 **GeneSPLS** is a comprehensive toolkit designed for performing Sparse Partial Least Squares (SPLS) regression analyses on genomic data. The project primarily focuses on eQTL (expression quantitative trait loci) mapping where the goal is to identify associations between genetic variants (SNPs) and gene expression levels.
 
 In this project, we utilize source data from the **Geuvadis consortium**, which provides an extensive collection of RNA-seq gene expression data and corresponding high-density genotype information from European populations. The dataset encompasses expression levels for thousands of genes across multiple individuals, allowing for the exploration of genetic regulation mechanisms. Our data preprocessing scripts harmonize and integrate these datasets to create both univariate and multivariate outcome matrices for analysis.
