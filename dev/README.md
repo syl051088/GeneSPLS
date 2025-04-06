@@ -20,7 +20,25 @@ This repository includes:
 
 The central research question addressed by this project is: **Which genomic variants (SNPs) are significantly associated with gene expression differences, and how can we effectively identify these associations using a sparse dimension reduction approach?** By employing SPLS regression, we aim to reduce the high dimensionality inherent in genomic data while simultaneously selecting the most relevant variables, thereby enhancing the interpretability and predictive performance in eQTL analyses. Special attention is given to key genes such as AKT3, providing insights into their regulatory mechanisms.
 
-### Mathematical Formulation
+## Geuvadis Consortium: Background and Dataset Overview
+
+The **Geuvadis Consortium** (short for *Genetic EUropean VAriation in DISease*) was an EU-funded research collaboration launched in 2010, aimed at exploring how genetic variation impacts gene expression and human disease ([CORDIS: GEUVADIS Project Report](https://cordis.europa.eu/project/id/261123/reporting/de)).
+
+### Geuvadis Dataset Characteristics
+
+One of the major outcomes of Geuvadis is a **large-scale reference dataset** integrating genomic and transcriptomic information. This dataset is widely used in human genomics as it provides a rich resource for studying **expression quantitative trait loci (eQTLs)** and gene regulation. Key features of the Geuvadis dataset include:
+
+- **Cohort Size & Populations:** The project profiled **≈465 individuals** (after quality control, 462 remained) drawn from **five distinct populations**. These populations were the CEPH Utah residents (**CEU**), Finns (**FIN**), British (**GBR**), Toscani Italians (**TSI**), and Yoruba Nigerians (**YRI**), with roughly 89–95 individuals per group. Notably, these were a subset of the 1000 Genomes Project samples, meaning each participant had well-characterized genetic backgrounds ([PMC: Transcriptomes of 1000 Genomes](https://pmc.ncbi.nlm.nih.gov/articles/PMC3831822/)).
+
+- **Tissue Source:** All gene expression measurements were performed on **lymphoblastoid cell lines (LCLs)**. These LCLs are immortalized cell lines derived from participants’ blood, providing a consistent *in vitro* tissue across all individuals. Focusing on a single cell type ensured that differences observed were due to genetic and regulatory variation rather than different tissues.
+
+- **Data Types:** Geuvadis generated **whole transcriptome RNA sequencing (RNA-seq)** data for each individual, including both messenger RNA (mRNA) and microRNA (**miRNA**) profiles. In total, high-throughput sequencing was done for both **mRNA** (capturing gene expression levels and splicing) and **small RNA** (capturing miRNA expression) from each sample. Complementing the RNA-seq, **genotype data** for each individual were obtained from the 1000 Genomes project or high-density SNP arrays ([PMC: Genotype Data](https://pmc.ncbi.nlm.nih.gov/articles/PMC3918453/)). In fact, 421 of the 462 individuals had full genome sequences available (Phase 1 of 1000 Genomes), and the remainder’s genotypes were imputed from SNP chips. This provided a complete genomic variation map alongside the expression data. The combination of **paired genetic and expression data** in multiple populations made the Geuvadis dataset extremely valuable for eQTL mapping and integrative analyses.
+
+### Relation to the GeneSPLS Project
+
+The **GeneSPLS project** utilizes data from Geuvadis, effectively leveraging a *subset* of this larger consortium dataset for its analyses. In practice, this means that GeneSPLS did not collect new experimental data but rather uses the existing Geuvadis resource (for example, the gene expression levels and corresponding genotypes for a selection of **373 overlapping individuals**) as input to its models. By drawing on a portion of Geuvadis data, GeneSPLS can demonstrate and validate its methodology on real human genomic data while benefiting from the rigorous quality control and population diversity of the Geuvadis project. It should be emphasized that any results or figures in GeneSPLS are grounded in the Geuvadis dataset – a well-established reference. 
+
+## Mathematical Formulation
 
 The underlying PLS regression model is defined as:
   
