@@ -40,21 +40,129 @@ The **GeneSPLS project** utilizes data from Geuvadis, effectively leveraging a *
 
 ## Mathematical Formulation
 
-The underlying PLS regression model is defined as:
-  
+---
+
+### 1. Theoretical Overview of eQTL Analysis
+
+In expression quantitative trait loci (eQTL) analysis, the objective is to identify associations between genetic variants (SNPs) and gene expression levels. This relationship is typically modeled using a standard linear regression framework:
+
 $$
 {\huge
-Y = X B_{PLS} + F,
+Y = X B + F,
 }
 $$
 
-where:  
-- $X$ is the $n \times p$ predictor matrix (SNP genotypes),  
-- $Y$ is the $n \times q$ response matrix (gene expression),  
-- $B_{PLS}$ is the matrix of regression coefficients,  
-- $F$ represents the residual errors.
+where:
+- $X \in \mathbb{R}^{n \times p}$ is the genotype matrix (with $n$ individuals and $p$ SNPs),
+- $Y \in \mathbb{R}^{n \times q}$ is the gene expression matrix (with $q$ genes, where $q$ can be 1 or more),
+- $B \in \mathbb{R}^{p \times q}$ is the matrix of regression coefficients,
+- $F \in \mathbb{R}^{n \times q}$ represents the error terms.
 
-For the sparse formulation, we solve an optimization problem that imposes an \(L_1\) penalty to encourage sparsity in the direction vectors. A generalized formulation is:
+The challenge in eQTL analysis arises because $p$ is typically much larger than $n$, and the SNPs (columns of $X$) are highly correlated. Dimensionality reduction methods such as Partial Least Squares (PLS) offer an effective solution in this context.
+
+---
+
+### 2. Partial Least Squares (PLS) Regression with the Wide Kernel Algorithm
+
+PLS regression seeks to find latent components that capture the covariance between $X$ and $Y$. In our context, this helps model the relationship between SNPs and gene expression. The model assumes that both $X$ and $Y$ can be decomposed as:
+
+$$
+{\huge
+X = T P^T + E, \quad Y = T Q^T + F,
+}
+$$
+
+where:
+- $T \in \mathbb{R}^{n \times K}$ is the matrix of latent scores,
+- $P \in \mathbb{R}^{p \times K}$ and $Q \in \mathbb{R}^{q \times K}$ are the loading matrices,
+- $E$ and $F$ are residual matrices,
+- $K$ is the number of latent components.
+
+#### Wide Kernel PLS Derivation
+
+For datasets where $p \gg n$, the wide kernel PLS algorithm avoids direct computations in the high-dimensional space by utilizing kernel matrices. The key steps are:
+
+1. **Kernel Formation:**
+
+Compute the cross-product matrices:
+   
+$$
+{\huge
+XX^T \quad \text{and } \quad YY^T.
+}
+$$
+
+Form the composite kernel matrix:
+
+$$
+{\huge
+M_{\text{kernel}} = (XX^T)(YY^T).
+}
+$$
+
+2. **Latent Score Computation:**
+
+Solve the eigenvalue problem:
+
+$$
+{\huge
+M_{\text{kernel}} t = \lambda t,
+}
+$$
+
+where $t$ is a score vector (a column of $T$) and $\lambda$ is the associated eigenvalue. The iterative process, often implemented using the power method, extracts these score vectors efficiently.
+
+3. **Weight Vector and Loadings:**  
+
+Once a score vector $t$ is obtained, compute the corresponding weight vector:
+
+$$
+{\huge
+w = \frac{X^T t}{\|X^T t\|}.
+}
+$$
+
+The loading matrices are then derived as:
+$$
+{\huge
+P = X^T T (T^T T)^{-1}, \quad Q = Y^T T (T^T T)^{-1}.
+}
+$$
+
+4. **Regression Coefficients:**
+
+Finally, the PLS regression coefficients are given by:
+
+$$
+{\huge
+B_{\text{PLS}} = W (P^T W)^{-1} Q^T,
+}
+$$
+
+where $W$ is the matrix whose columns are the weight vectors $w$.
+
+#### Connection to `pls.cpp`
+
+In our source code (`pls.cpp`), the function `widekernelpls_fit` implements the wide kernel PLS algorithm:
+- **Input:**  
+  - $X$ (predictor matrix) and $Y$ (response matrix).
+  - $ncomp$ (number of latent components, $K$).
+  - Options to center $X$ and $Y$ (outputs stored as `Xmeans` and `Ymeans`).
+- **Processing:**  
+  - Centers $X$ and $Y$ and computes $XX^T$ and $YY^T$.
+  - Iteratively computes latent score vectors $T$ using the kernel $XX^T YY^T$ with normalization.
+  - Derives the weight matrix $W = X^T U$ and computes the projection matrix $R$ that maps $X$ to the latent space.
+  - Computes regression coefficients for each number of components, stored in `coefficients`.
+- **Output:**  
+  - `coefficients`: Represents $B_{\text{PLS}}$.
+  - `projection`: The projection matrix $R$.
+  - `Xmeans` and `Ymeans`: The centering constants used.
+
+---
+
+### 3. Sparse Partial Least Squares (SPLS) Regression
+
+To further refine the model for eQTL analysis, SPLS introduces sparsity in the weight vectors, thereby selecting only the most relevant SNPs. The SPLS model is formulated as:
 
 $$
 {\huge
@@ -62,9 +170,70 @@ $$
 }
 $$
 
-where $M = X^T Y Y^T X$, and $\\kappa$, $\\lambda_1$, and $\\lambda_2$ are tuning parameters. Cross-validation (via `cv_spls_cpp`) is used to determine the optimal values for the sparsity (typically through the candidate eta values) and the number of latent components $K$.
+where:
+- $M = X^T Y Y^T X$,
+- $w$ is the direction vector,
+- $c$ is an auxiliary vector that is encouraged to be sparse,
+- $\kappa$ controls the trade-off between maximizing covariance and matching $w$ to $c$,
+- $\lambda_1$ and $\lambda_2$ are the regularization parameters for the $L_1$ and $L_2$ penalties, respectively.
 
-This formulation combines dimension reduction with variable selection, allowing the model to focus on the most relevant genetic variants driving gene expression differences.
+Cross-validation (via `cv_spls_cpp`) is used to determine the optimal values for the sparsity (typically through the candidate eta values) and the number of latent components $K$.
+
+#### Derivation Details for SPLS
+
+The derivation proceeds by alternating between:
+1. **Optimizing $w$ with $c$ fixed:**
+
+Solve:
+
+$$
+{\huge
+\min_{w} \left( -\kappa\, w^T M w + \frac{1-\kappa}{2}\|c - w\|^2 \right) \quad \text{subject to } \|w\|_2 = 1
+}
+$$
+
+This can be tackled via Lagrange multipliers, leading to an update that resembles an eigen-decomposition of an adjusted matrix.
+
+2. **Optimizing $c$ with $w$ fixed:**  
+
+Solve:
+
+$$
+{\huge
+\min_{c} \left( \frac{1-\kappa}{2} \|c - w\|^2 + \lambda_1 \|c\|_1 + \lambda_2 \|c\|_2^2 \right)
+}
+$$
+   
+This step is analogous to solving an elastic net problem and can be solved by soft-thresholding, which yields many zero entries in $c$.
+
+The iterative process converges to a sparse estimate of the direction vector, which in turn leads to a sparse regression coefficient matrix $B_{\text{SPLS}}$.
+
+#### Connection to `spls.cpp`
+
+In our `spls.cpp` implementation, the function `spls_cpp` performs the SPLS algorithm:
+- **Input:**  
+  - $x$ and $y$ (predictor and response matrices).
+  - $K$ (number of latent components).
+  - Sparsity parameter `eta` (analogous to $\lambda_1$), along with $\kappa$, and additional parameters controlling convergence.
+- **Processing:**  
+  - The function centers and scales the data.
+  - It then alternates between updating the weight vector $w$ and the sparse surrogate $c$ using the derivations outlined above.
+  - An active set $A$ is determined based on the non-zero elements in $c$ (or the estimated coefficients).
+  - For the subset of variables in $A$, a restricted PLS (via `widekernelpls_fit`) is performed to obtain the final regression coefficients.
+- **Output:**  
+  - `betahat`: The sparse regression coefficients $B_{\text{SPLS}}$.
+  - `A`: The active set of predictors (indices corresponding to non-zero loadings).
+  - `projection`: The projection matrix computed on the reduced set.
+
+In GeneSPLS, cross-validation (via `cv_spls_cpp`) is used to determine the optimal values for the sparsity (typically through the candidate eta values) and the number of latent components $K$.
+
+---
+
+### 4. Integration in the eQTL Context
+
+Both PLS and SPLS serve to overcome the challenges in eQTL analysis by reducing dimensionality and, in the case of SPLS, selecting the most relevant SNPs. The wide kernel approach in PLS efficiently computes the latent structure even when $p \gg n$, while SPLS refines the model by enforcing sparsity. In our GeneSPLS package, the implementations in `pls.cpp` and `spls.cpp` follow these theoretical derivations closely, ensuring that the outputs (regression coefficients, projection matrices, centering means, and active sets) are directly interpretable in terms of the underlying mathematical models.
+
+---
 
 ## Dependencies & Prerequisites
 
