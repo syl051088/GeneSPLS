@@ -2,13 +2,13 @@ Package: GeneSPLS
 Type: Package
 Title: Wide Kernel Partial Least Squares
 Version: 1.0
-Date: 2025-02-28
+Date: 2025-04-09
 Authors@R: c(
   person("Yulin", "Shao", email = "jyshao@umich.edu", role = c("aut", "cre")),
   person("Nathan", "Szeto", email = "nszeto@umich.edu", role = c("aut")),
   person("Tai", "Yang", email = "yangtai@umich.edu", role = c("aut")))
-Description: This package implements Partial Least Squares Regression (PLSR)
-  with a wide kernel algorithm, which is especially efficient for extremely
+Description: This package implements Sparse Partial Least Squares Regression
+  with a wide kernel algorithm, which is efficient for extremely
   high-dimensional data. This algorithm was selected since the intended
   application of this pacakge is for genetics data.
 License: MIT + file LICENSE

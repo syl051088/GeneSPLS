@@ -15,15 +15,37 @@
 #' @param fit Fitting method
 #' @return List with validated parameters
 #' 
-#' @export
-correctp <- function(X, Y, eta, K, kappa, select, fit) {
-    .Call(`_GeneSPLS_correctp`, X, Y, eta, K, kappa, select, fit)
-}
+NULL
 
+#' @name cv_spls_cpp
+#' @title Cross-Validation for SPLS
+#'
+#' @description This function performs cross-validation for the number of
+#' latent components and sparsity parameters
+#'
+#' @param x Predictor matrix (n x p)
+#' @param y Response matrix (n x q)
+#' @param fold Number of folds for cross-validation
+#' @param eta Numeric vector of sparsity parameters
+#' @param K Integer vector of candidate numbers of components
+#' @param kappa Sparsity parameter
+#' @param select Selection method
+#' @param scale_x Logical, whether to scale x
+#' @param scale_y Logical, whether to scale y
+#' @param eps Convergence criterion
+#' @param maxstep Maximum number of iterations
+#' @param trace Logical, whether to print progress
+#'
+#' @return A list containing:
+#' \item{mspemat}{Matrix of mean squared prediction errors (MSPE)}
+#' \item{eta.opt}{Optimal eta value}
+#' \item{K.opt}{Optimal number of latent components}
+#' 
 #' @useDynLib GeneSPLS, .registration = TRUE
 #' @import Rcpp
 #' 
 #' @export
+#' 
 cv_spls_cpp <- function(x, y, fold, eta, K, kappa, select, scale_x, scale_y, eps, maxstep, trace) {
     .Call(`_GeneSPLS_cv_spls_cpp`, x, y, fold, eta, K, kappa, select, scale_x, scale_y, eps, maxstep, trace)
 }
@@ -47,9 +69,6 @@ cv_spls_cpp <- function(x, y, fold, eta, K, kappa, select, scale_x, scale_y, eps
 #' \item{Xmeans}{The column means of X (if centered)}
 #' \item{Ymeans}{The column means of Y (if centered)}
 #' 
-#' @useDynLib GeneSPLS, .registration = TRUE
-#' @import Rcpp
-#' 
 #' @examples
 #' 
 #' set.seed(815)
@@ -70,11 +89,8 @@ cv_spls_cpp <- function(x, y, fold, eta, K, kappa, select, scale_x, scale_y, eps
 #' pls_cpp = GeneSPLS::widekernelpls_fit(X, Y, 5, center = FALSE)
 #' pls_cpp$projection
 #' pls_cpp$coefficients
-#'
-#' @export
-widekernelpls_fit <- function(X, Y, ncomp, center = TRUE, tol = 1.5e-8, maxit = 100L) {
-    .Call(`_GeneSPLS_widekernelpls_fit`, X, Y, ncomp, center, tol, maxit)
-}
+#' 
+NULL
 
 #' @name spls_cpp
 #' @title Sparse Partial Least Squares Regression
@@ -103,6 +119,7 @@ widekernelpls_fit <- function(X, Y, ncomp, center = TRUE, tol = 1.5e-8, maxit = 
 #' @import Rcpp
 #' 
 #' @export
+#' 
 spls_cpp <- function(x, y, K, eta, kappa = 0.5, select = "pls2", fit = "widekernelpls", scale_x = TRUE, scale_y = FALSE, eps = 1e-4, maxstep = 100L, trace = FALSE) {
     .Call(`_GeneSPLS_spls_cpp`, x, y, K, eta, kappa, select, fit, scale_x, scale_y, eps, maxstep, trace)
 }
@@ -115,6 +132,7 @@ spls_cpp <- function(x, y, K, eta, kappa = 0.5, select = "pls2", fit = "widekern
 #' @param b Vector to be thresholded
 #' @param eta Threshold parameter between 0 and 1
 #' @return Soft thresholded vector
+#' 
 NULL
 
 #' @name spls_dv
@@ -129,8 +147,5 @@ NULL
 #' @param maxstep Maximum number of iterations
 #' @return Direction vector
 #' 
-#' @export
-spls_dv <- function(Z, eta, kappa, eps, maxstep) {
-    .Call(`_GeneSPLS_spls_dv`, Z, eta, kappa, eps, maxstep)
-}
+NULL
 

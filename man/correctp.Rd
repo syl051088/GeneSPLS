@@ -3,9 +3,6 @@
 \name{correctp}
 \alias{correctp}
 \title{Parameter validation for SPLS}
-\usage{
-correctp(X, Y, eta, K, kappa, select, fit)
-}
 \arguments{
 \item{X}{Predictor matrix}
 

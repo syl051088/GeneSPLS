@@ -1,4 +1,5 @@
 #include "spls_dv.h"
+
 // [[Rcpp::depends(RcppArmadillo)]]
 
 //' @name ust
@@ -9,6 +10,7 @@
 //' @param b Vector to be thresholded
 //' @param eta Threshold parameter between 0 and 1
 //' @return Soft thresholded vector
+//' 
 arma::vec ust(const arma::vec& b, double eta) {
  arma::vec b_ust = arma::zeros<arma::vec>(b.n_elem);
  if (eta < 1) {
@@ -31,8 +33,6 @@ arma::vec ust(const arma::vec& b, double eta) {
 //' @param maxstep Maximum number of iterations
 //' @return Direction vector
 //' 
-//' @export
-// [[Rcpp::export]]
 arma::vec spls_dv(const arma::mat& Z, double eta, double kappa, double eps, int maxstep) {
  int p = Z.n_rows;
  int q = Z.n_cols;

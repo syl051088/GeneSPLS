@@ -2,6 +2,7 @@
 #include "pls.h"
 #include "spls_dv.h"
 #include "correctp.h"
+
 // [[Rcpp::depends(RcppArmadillo)]]
 
 //' @name spls_cpp
@@ -31,6 +32,7 @@
 //' @import Rcpp
 //' 
 //' @export
+//' 
 // [[Rcpp::export]]
 Rcpp::List spls_cpp(arma::mat x, arma::mat y, int K, double eta, double kappa = 0.5,
                     std::string select = "pls2", std::string fit = "widekernelpls",

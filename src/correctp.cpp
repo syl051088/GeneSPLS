@@ -1,5 +1,6 @@
 #include "correctp.h"
 #include <algorithm>  // Required for std::find
+
 // [[Rcpp::depends(RcppArmadillo)]]
 
 //' @name correctp
@@ -16,8 +17,6 @@
 //' @param fit Fitting method
 //' @return List with validated parameters
 //' 
-//' @export
-// [[Rcpp::export]]
 Rcpp::List correctp(arma::mat X, arma::mat Y, double eta, int K, double kappa,
                    std::string select, std::string fit) {
  

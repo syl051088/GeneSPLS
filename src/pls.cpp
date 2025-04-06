@@ -1,5 +1,6 @@
 #include "pls.h"
 #include <limits>
+
 // [[Rcpp::depends(RcppArmadillo)]]
 
 //' @name widekernelpls_fit
@@ -21,9 +22,6 @@
 //' \item{Xmeans}{The column means of X (if centered)}
 //' \item{Ymeans}{The column means of Y (if centered)}
 //' 
-//' @useDynLib GeneSPLS, .registration = TRUE
-//' @import Rcpp
-//' 
 //' @examples
 //' 
 //' set.seed(815)
@@ -44,9 +42,7 @@
 //' pls_cpp = GeneSPLS::widekernelpls_fit(X, Y, 5, center = FALSE)
 //' pls_cpp$projection
 //' pls_cpp$coefficients
-//'
-//' @export
-// [[Rcpp::export]]
+//' 
 Rcpp::List widekernelpls_fit(arma::mat X,
                              arma::mat Y,
                              int ncomp,

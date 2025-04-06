@@ -3,9 +3,6 @@
 \name{widekernelpls_fit}
 \alias{widekernelpls_fit}
 \title{Wide Kernel PLS Algorithm Implementation}
-\usage{
-widekernelpls_fit(X, Y, ncomp, center = TRUE, tol = 1.5e-08, maxit = 100L)
-}
 \arguments{
 \item{X}{Predictor matrix (n x p), p is the number of predictors}
 

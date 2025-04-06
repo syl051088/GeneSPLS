@@ -3,9 +3,6 @@
 \name{spls_dv}
 \alias{spls_dv}
 \title{Sparse PLS Direction Vector Estimation}
-\usage{
-spls_dv(Z, eta, kappa, eps, maxstep)
-}
 \arguments{
 \item{Z}{Cross-product matrix (p x q)}
 

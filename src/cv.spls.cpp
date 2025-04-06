@@ -27,10 +27,36 @@ std::vector< std::vector<int> > generate_folds(int n, int fold) {
   return folds;
 }
 
+
+//' @name cv_spls_cpp
+//' @title Cross-Validation for SPLS
+//'
+//' @description This function performs cross-validation for the number of
+//' latent components and sparsity parameters
+//'
+//' @param x Predictor matrix (n x p)
+//' @param y Response matrix (n x q)
+//' @param fold Number of folds for cross-validation
+//' @param eta Numeric vector of sparsity parameters
+//' @param K Integer vector of candidate numbers of components
+//' @param kappa Sparsity parameter
+//' @param select Selection method
+//' @param scale_x Logical, whether to scale x
+//' @param scale_y Logical, whether to scale y
+//' @param eps Convergence criterion
+//' @param maxstep Maximum number of iterations
+//' @param trace Logical, whether to print progress
+//'
+//' @return A list containing:
+//' \item{mspemat}{Matrix of mean squared prediction errors (MSPE)}
+//' \item{eta.opt}{Optimal eta value}
+//' \item{K.opt}{Optimal number of latent components}
+//' 
 //' @useDynLib GeneSPLS, .registration = TRUE
 //' @import Rcpp
 //' 
 //' @export
+//' 
 // [[Rcpp::export]]
 Rcpp::List cv_spls_cpp(arma::mat x,
                        arma::mat y,
@@ -113,7 +139,7 @@ Rcpp::List cv_spls_cpp(arma::mat x,
       Rcpp::List cp = correctp(x_train, y_train, current_eta, K_candidates[0], kappa, select, "widekernelpls");
       // Extract corrected parameters (if needed, though in our case they may remain unchanged)
       double corrected_eta = Rcpp::as<double>(cp["eta"]);
-      int corrected_K_dummy = Rcpp::as<int>(cp["K"]);  // not used directly; we use candidate K values
+      // int corrected_K_dummy = Rcpp::as<int>(cp["K"]);  // not used directly; we use candidate K values
       kappa = Rcpp::as<double>(cp["kappa"]);
       select = Rcpp::as<std::string>(cp["select"]);
       std::string fit = "widekernelpls"; // force to "widekernelpls"
