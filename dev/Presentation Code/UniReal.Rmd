@@ -4,7 +4,7 @@ library(GeneSPLS)
 library(spls)
 library(microbenchmark)
 
-data("UniSim") # load data
+data("UniReal") # load data
 source(here::here("dev", "coef_valid.R"))
 ```
 
@@ -21,9 +21,9 @@ K_candidates <- 1:10
 
 # spls
 
-cv_uni_sim_R <- cv.spls(
-  X_uni_sim,
-  Y_uni_sim,
+cv_uni_real_R <- cv.spls(
+  X_uni_real,
+  Y_uni_real,
   fold = 5,
   eta = eta_candidates,
   K = K_candidates,
@@ -37,9 +37,9 @@ cv_uni_sim_R <- cv.spls(
 
 # GeneSPLS
 
-cv_uni_sim_Cpp <- cv_spls_cpp(
-  X_uni_sim,
-  Y_uni_sim,
+cv_uni_real_Cpp <- cv_spls_cpp(
+  X_uni_real,
+  Y_uni_real,
   fold = 5,
   eta = eta_candidates,
   K = K_candidates,
@@ -51,11 +51,11 @@ cv_uni_sim_Cpp <- cv_spls_cpp(
   maxstep = 10000,
   trace = FALSE)
 
-eta_uni_sim_R <- cv_uni_sim_R$eta.opt
-K_uni_sim_R <- cv_uni_sim_R$K.opt
-eta_uni_sim_Cpp <- cv_uni_sim_Cpp$eta.opt
-K_uni_sim_Cpp <- cv_uni_sim_Cpp$K.opt
-rm(cv_uni_sim_R, cv_uni_sim_Cpp)
+eta_uni_real_R <- cv_uni_real_R$eta.opt
+K_uni_real_R <- cv_uni_real_R$K.opt
+eta_uni_real_Cpp <- cv_uni_real_Cpp$eta.opt
+K_uni_real_Cpp <- cv_uni_real_Cpp$K.opt
+rm(cv_uni_real_R, cv_uni_real_Cpp)
 ```
 
 
@@ -67,21 +67,21 @@ set.seed(815)
 
 # spls
 
-spls_uni_sim_R <- spls(
-  X_uni_sim,
-  Y_uni_sim,
-  K = K_uni_sim_Cpp,
-  eta = eta_uni_sim_Cpp,
+spls_uni_real_R <- spls(
+  X_uni_real,
+  Y_uni_real,
+  K = K_uni_real_Cpp,
+  eta = eta_uni_real_Cpp,
   fit = "widekernelpls")
 
 
 # GeneSPLS
 
-spls_uni_sim_Cpp <- spls_cpp(
-  X_uni_sim,
-  Y_uni_sim,
-  K = K_uni_sim_Cpp,
-  eta = eta_uni_sim_Cpp,
+spls_uni_real_Cpp <- spls_cpp(
+  X_uni_real,
+  Y_uni_real,
+  K = K_uni_real_Cpp,
+  eta = eta_uni_real_Cpp,
   kappa = 0.5,
   select = "pls2",
   fit = "widekernelpls",
@@ -93,8 +93,8 @@ spls_uni_sim_Cpp <- spls_cpp(
 
 # Valid coefficients match
 coef_valid(
-  coef(spls_uni_sim_R),
-  spls_uni_sim_Cpp$betahat,
+  coef(spls_uni_real_R),
+  spls_uni_real_Cpp$betahat,
   tolerance = 1e-6
 )
 ```
@@ -108,11 +108,11 @@ set.seed(815)
 
 ### CV BENCHMARK ###
 
-bench_cv_uni_sim <- microbenchmark(
+bench_cv_uni_real <- microbenchmark(
   
-  cv_uni_sim_R = cv.spls(
-    X_uni_sim,
-    Y_uni_sim,
+  cv_uni_real_R = cv.spls(
+    X_uni_real,
+    Y_uni_real,
     fold = 5,
     eta = eta_candidates,
     K = K_candidates,
@@ -123,9 +123,9 @@ bench_cv_uni_sim <- microbenchmark(
     scale.y = FALSE,
     plot.it = FALSE),
   
-  cv_uni_sim_Cpp <- cv_spls_cpp(
-    X_uni_sim,
-    Y_uni_sim,
+  cv_uni_real_Cpp <- cv_spls_cpp(
+    X_uni_real,
+    Y_uni_real,
     fold = 5,
     eta = eta_candidates,
     K = K_candidates,
@@ -143,20 +143,20 @@ bench_cv_uni_sim <- microbenchmark(
 
 ### MODEL BENCHMARK ###
 
-bench_spls_uni_sim <- microbenchmark(
+bench_spls_uni_real <- microbenchmark(
   
-  spls_uni_sim_R = spls(
-    X_uni_sim,
-    Y_uni_sim,
-    K = K_uni_sim_Cpp,
-    eta = eta_uni_sim_Cpp,
+  spls_uni_real_R = spls(
+    X_uni_real,
+    Y_uni_real,
+    K = K_uni_real_Cpp,
+    eta = eta_uni_real_Cpp,
     fit = "widekernelpls"),
   
-  spls_uni_sim_Cpp = spls_cpp(
-    X_uni_sim,
-    Y_uni_sim,
-    K = K_uni_sim_Cpp,
-    eta = eta_uni_sim_Cpp,
+  spls_uni_real_Cpp = spls_cpp(
+    X_uni_real,
+    Y_uni_real,
+    K = K_uni_real_Cpp,
+    eta = eta_uni_real_Cpp,
     kappa = 0.5,
     select = "pls2",
     fit = "widekernelpls",
@@ -168,7 +168,9 @@ bench_spls_uni_sim <- microbenchmark(
   
   times = 50
 )
+```
 
-print(bench_cv_uni_sim) # CV benchmark results
-print(bench_spls_uni_sim) # SPLS benchmark results
+```{r benchmark results}
+print(bench_cv_uni_real) # CV benchmark results
+print(bench_spls_uni_real) # SPLS benchmark results
 ```

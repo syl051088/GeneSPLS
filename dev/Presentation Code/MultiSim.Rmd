@@ -168,7 +168,9 @@ bench_spls_multi_sim <- microbenchmark(
   
   times = 50
 )
+```
 
+```{r benchmark results}
 print(bench_cv_multi_sim) # CV benchmark results
 print(bench_spls_multi_sim) # SPLS benchmark results
 ```
