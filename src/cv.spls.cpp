@@ -27,6 +27,10 @@ std::vector< std::vector<int> > generate_folds(int n, int fold) {
   return folds;
 }
 
+//' @useDynLib GeneSPLS, .registration = TRUE
+//' @import Rcpp
+//' 
+//' @export
 // [[Rcpp::export]]
 Rcpp::List cv_spls_cpp(arma::mat x,
                        arma::mat y,

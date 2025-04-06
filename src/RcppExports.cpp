@@ -28,6 +28,28 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// cv_spls_cpp
+Rcpp::List cv_spls_cpp(arma::mat x, arma::mat y, int fold, Rcpp::NumericVector eta, Rcpp::IntegerVector K, double kappa, std::string select, bool scale_x, bool scale_y, double eps, int maxstep, bool trace);
+RcppExport SEXP _GeneSPLS_cv_spls_cpp(SEXP xSEXP, SEXP ySEXP, SEXP foldSEXP, SEXP etaSEXP, SEXP KSEXP, SEXP kappaSEXP, SEXP selectSEXP, SEXP scale_xSEXP, SEXP scale_ySEXP, SEXP epsSEXP, SEXP maxstepSEXP, SEXP traceSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type x(xSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type y(ySEXP);
+    Rcpp::traits::input_parameter< int >::type fold(foldSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type eta(etaSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type K(KSEXP);
+    Rcpp::traits::input_parameter< double >::type kappa(kappaSEXP);
+    Rcpp::traits::input_parameter< std::string >::type select(selectSEXP);
+    Rcpp::traits::input_parameter< bool >::type scale_x(scale_xSEXP);
+    Rcpp::traits::input_parameter< bool >::type scale_y(scale_ySEXP);
+    Rcpp::traits::input_parameter< double >::type eps(epsSEXP);
+    Rcpp::traits::input_parameter< int >::type maxstep(maxstepSEXP);
+    Rcpp::traits::input_parameter< bool >::type trace(traceSEXP);
+    rcpp_result_gen = Rcpp::wrap(cv_spls_cpp(x, y, fold, eta, K, kappa, select, scale_x, scale_y, eps, maxstep, trace));
+    return rcpp_result_gen;
+END_RCPP
+}
 // widekernelpls_fit
 Rcpp::List widekernelpls_fit(arma::mat X, arma::mat Y, int ncomp, bool center, double tol, int maxit);
 RcppExport SEXP _GeneSPLS_widekernelpls_fit(SEXP XSEXP, SEXP YSEXP, SEXP ncompSEXP, SEXP centerSEXP, SEXP tolSEXP, SEXP maxitSEXP) {
@@ -84,6 +106,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_GeneSPLS_correctp", (DL_FUNC) &_GeneSPLS_correctp, 7},
+    {"_GeneSPLS_cv_spls_cpp", (DL_FUNC) &_GeneSPLS_cv_spls_cpp, 12},
     {"_GeneSPLS_widekernelpls_fit", (DL_FUNC) &_GeneSPLS_widekernelpls_fit, 6},
     {"_GeneSPLS_spls_cpp", (DL_FUNC) &_GeneSPLS_spls_cpp, 12},
     {"_GeneSPLS_spls_dv", (DL_FUNC) &_GeneSPLS_spls_dv, 5},

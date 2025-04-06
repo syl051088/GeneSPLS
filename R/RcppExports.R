@@ -20,6 +20,14 @@ correctp <- function(X, Y, eta, K, kappa, select, fit) {
     .Call(`_GeneSPLS_correctp`, X, Y, eta, K, kappa, select, fit)
 }
 
+#' @useDynLib GeneSPLS, .registration = TRUE
+#' @import Rcpp
+#' 
+#' @export
+cv_spls_cpp <- function(x, y, fold, eta, K, kappa, select, scale_x, scale_y, eps, maxstep, trace) {
+    .Call(`_GeneSPLS_cv_spls_cpp`, x, y, fold, eta, K, kappa, select, scale_x, scale_y, eps, maxstep, trace)
+}
+
 #' @name widekernelpls_fit
 #' @title Wide Kernel PLS Algorithm Implementation
 #'

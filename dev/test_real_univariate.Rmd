@@ -19,6 +19,8 @@ We will: 1. Load and filter the real genotype and expression data (specifically 
 We load the genotype matrix (stored as an RDS file) and the AKT3 gene expression data (from a CSV). We also ensure that the subject order matches and filter SNPs based on a standard deviation threshold.
 
 ```{r load-data, echo=TRUE}
+library(GeneSPLS)
+library(spls)
 # Load real data
 X <- readRDS("/home/yangtai/BIOSTAT815_Project/genotype_matrix.rds")
 Y <- read.csv("/home/yangtai/BIOSTAT815_Project/akt3_expression.csv", stringsAsFactors = FALSE)

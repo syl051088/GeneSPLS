@@ -28,6 +28,8 @@ We also simulate a full gene expression matrix for 373 individuals and 500 genes
 Finally, we randomly select 3 genes (with seed set for reproducibility) to serve as the multivariate outcome.
 
 ```{r simulate-data, echo=TRUE, message=FALSE, warning=FALSE}
+library(GeneSPLS)
+library(spls)
 set.seed(199)
 
 # Simulation parameters

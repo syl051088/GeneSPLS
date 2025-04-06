@@ -18,6 +18,8 @@ We also tune parameters using the Rcpp version of cross-validation (`cv_spls_cpp
 We simulate data for 200 individuals and 5000 SNPs (coded as 0, 1, or 2). A continuous phenotype is generated as a linear combination of a few SNPs plus noise.
 
 ```{r simulate-data, echo=TRUE}
+library(GeneSPLS)
+library(spls)
 set.seed(901)
 n <- 200   # Number of individuals
 p <- 5000  # Number of SNPs
