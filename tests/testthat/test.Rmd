@@ -1,0 +1,216 @@
+```{r Setup}
+library(pls)
+library(GeneSPLS)
+library(microbenchmark)
+
+set.seed(815)
+
+# Simulating high-dimensional predictor matrix (p >> n)
+n <- 10   # Number of observations
+p <- 20  # Number of predictors
+
+X <- matrix(rnorm(n * p), nrow = n, ncol = p)  # Random normal predictors
+
+# True coefficients: Only first 5 predictors contribute to Y
+beta <- c(rnorm(5, sd = 2), rep(0, p - 5))
+
+# Generating response variable Y with N(0,1) noise
+Y <- X %*% beta + rnorm(n)  
+
+sim_data <- data.frame(Y = Y, X)
+```
+
+```{r R Implementation}
+# Apply PLSR using 'widekernelpls' without validation
+pls_model <- plsr(Y ~ .,
+                  data = sim_data,
+                  ncomp = 5,
+                  method = "widekernelpls",
+                  validation = "none",
+                  center = TRUE)
+
+pls_model$projection
+pls_model$coefficients
+```
+
+```{r Rcpp Implementation}
+pls_cpp = widekernelpls_fit(X, Y, 5, center = TRUE)
+pls_cpp$projection
+pls_cpp$coefficients
+```
+
+```{r pls outputs comparison}
+# Compare Projection Matrices
+if (all(dim(pls_model$projection) == dim(pls_cpp$projection))) {
+  projection_diff <- max(abs(pls_model$projection - pls_cpp$projection))
+  projection_check <- all.equal(pls_model$projection, pls_cpp$projection, 
+                                tolerance = 1e-6, check.attributes = FALSE)
+} else {
+  projection_diff <- NA
+  projection_check <- FALSE
+  cat("\nWarning: Projection matrices have different dimensions!\n")
+}
+
+# Compare Coefficient Matrices
+if (all(dim(pls_model$coefficients) == dim(pls_cpp$coefficients))) {
+  coeff_diff <- max(abs(pls_model$coefficients - pls_cpp$coefficients))
+  coeff_check <- all.equal(pls_model$coefficients, pls_cpp$coefficients, 
+                           tolerance = 1e-6, check.attributes = FALSE)
+} else {
+  coeff_diff <- NA
+  coeff_check <- FALSE
+  cat("\nWarning: Coefficient matrices have different dimensions!\n")
+}
+
+# Print Results
+cat("\n===== Projection Matrix Comparison =====\n")
+cat("Maximum Absolute Difference =", projection_diff, "\n")
+cat("Equality Check:", projection_check, "\n")
+cat("\n===== Coefficients Matrix Comparison =====\n")
+cat("Maximum Absolute Difference =", coeff_diff, "\n")
+cat("Equality Check:", coeff_check, "\n")
+
+# If differences exist, show warnings
+if (!isTRUE(projection_check)) {
+  cat("\nWarning: Projection matrices differ significantly!\n")
+}
+if (!isTRUE(coeff_check)) {
+  cat("\nWarning: Coefficient matrices differ significantly!\n")
+}
+
+```
+
+```{r benchmark}
+benchmark_results <- microbenchmark(
+  plsr_R = plsr(Y ~ ., 
+                data = sim_data, 
+                ncomp = 5, 
+                method = "widekernelpls", 
+                validation = "none",
+                center = TRUE),
+  
+  plsr_Rcpp = widekernelpls_fit(X, Y, 5, center = TRUE),
+  
+  times = 10  # Run 10 times for accuracy
+)
+# Print benchmark results
+cat("\n===== Microbenchmark Results =====\n")
+print(benchmark_results)
+```
+
+```{r p>>n data}
+set.seed(815)
+
+# Simulating high-dimensional predictor matrix (p >> n)
+n <- 20   # Number of observations
+p <- 10000  # Number of predictors
+
+X <- matrix(rnorm(n * p), nrow = n, ncol = p)  # Random normal predictors
+
+# True coefficients: Only first 5 predictors contribute to Y
+beta <- c(rnorm(5, sd = 2), rep(0, p - 5))
+
+# Generating response variable Y with N(0,1) noise
+Y <- X %*% beta + rnorm(n)  
+
+sim_data <- data.frame(Y = Y, X)
+```
+
+```{r benchmark2}
+results = bench::mark(
+   plsr_R = plsr(Y ~ ., 
+                data = sim_data, 
+                ncomp = 5, 
+                method = "widekernelpls", 
+                validation = "none",
+                center = TRUE),
+  
+  plsr_Rcpp = widekernelpls_fit(X, Y, 5, center = TRUE),
+  check = F
+)
+
+print(results)
+plot(results)
+```
+
+```{r p>>n multivariate outcome data}
+set.seed(699)
+
+# Simulating high-dimensional predictor matrix (p >> n)
+n <- 20    # Number of observations
+p <- 10000 # Number of predictors
+m <- 1000    # Number of response variables (multivariate Y)
+
+X <- matrix(rnorm(n * p), nrow = n, ncol = p)  # Random normal predictors
+
+# True coefficients: Only first 5 predictors contribute to each Y
+beta <- matrix(0, nrow = p, ncol = m)  # Initialize coefficient matrix
+beta[1:5, ] <- matrix(rnorm(5 * m, sd = 2), nrow = 5, ncol = m)  # First 5 predictors are meaningful
+
+# Generating multivariate response Y with Gaussian noise
+Y <- X %*% beta + matrix(rnorm(n * m), nrow = n, ncol = m)  
+
+sim_data <- as.data.frame(cbind(Y, X))  
+colnames(sim_data) <- c(paste0("Y", 1:m), paste0("X", 1:p))
+```
+
+```{r benchmark3}
+time_plsr_widekernel <- system.time({
+  plsr_model <- plsr(as.matrix(sim_data[, 1:m]) ~ ., 
+                     data = sim_data, 
+                     ncomp = 5, 
+                     method = "widekernelpls", 
+                     validation = "none",
+                     center = TRUE)
+})
+time_plsr_simpls <- system.time({
+  plsr_model <- plsr(as.matrix(sim_data[, 1:m]) ~ ., 
+                     data = sim_data, 
+                     ncomp = 5, 
+                     method = "simpls", 
+                     validation = "none",
+                     center = TRUE)
+})
+time_rcpp <- system.time({
+  pls_cpp <- widekernelpls_fit(X, Y, 5, center = TRUE)
+})
+
+cat("\n===== Computation Time Comparison (system.time) =====\n")
+cat("R (plsr) Wide Kernel Execution Time:\n")
+print(time_plsr_widekernel)
+cat("R (plsr) SIMPLS Execution Time:\n")
+print(time_plsr_simpls)
+cat("nRcpp Execution Time:\n")
+print(time_rcpp)
+```
+
+```{r}
+set.seed(815)
+  
+n <- 10  # Number of observations
+p <- 500   # Number of predictors
+m <- 10    # Number of response variables (Multivariate Y)
+
+# Generate predictors (X) as a random normal matrix
+X <- matrix(rnorm(n * p), nrow = n, ncol = p)
+
+# Define true coefficients (Beta) for the multivariate response
+Beta <- matrix(rnorm(p * m, sd = 2), nrow = p, ncol = m)
+
+# Generate response variables (Y) with noise
+Y <- X %*% Beta + matrix(rnorm(n * m), nrow = n, ncol = m)
+
+# Convert to data frame for pls package
+sim_data <- data.frame(Y, X)
+
+```
+
+```{r}
+s1 = plsr(Y~X, data=sim_data, ncomp=5, method="widekernelpls", validation="none")
+s1$projection
+
+s2 = widekernelpls_fit(X, Y, 5)
+s2$projection
+```
+
+
