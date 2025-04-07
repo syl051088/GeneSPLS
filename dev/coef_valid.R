@@ -1,4 +1,4 @@
-coef_valid <- function(coef_R, coef_Cpp, tolerance = 1e-6) {
+coef_valid <- function(X, coef_R, coef_Cpp, tolerance = 1e-6) {
   
   # Identify non-zero coefficients using linear indices
   nonzero_idx_R <- which(coef_R != 0)
@@ -31,14 +31,22 @@ coef_valid <- function(coef_R, coef_Cpp, tolerance = 1e-6) {
     # Report differences in indices
     diff_in_R <- setdiff(nonzero_idx_R, nonzero_idx_Cpp)
     diff_in_Cpp <- setdiff(nonzero_idx_Cpp, nonzero_idx_R)
+    both <- intersect(nonzero_idx_R, nonzero_idx_Cpp)
+    SNPs_Both <- colnames(X)[both]
+    SNPs_R <- colnames(X)[diff_in_R]
+    SNPs_Cpp <- colnames(X)[diff_in_Cpp]
     
     if(length(diff_in_R) > 0) {
       
-      cat("Number of SNPs selected by spls but not by GeneSPLS:", diff_in_R, "\n")
+      cat("SNPs selected by both:", SNPs_Both, "\n")
+      cat("SNPs selected by spls but not by GeneSPLS:", SNPs_R, "\n")
       
-    } else if(length(diff_in_Cpp) > 0) {
+    } 
+    
+    if(length(diff_in_Cpp) > 0) {
       
-      cat("Number of SNPs selected by GeneSPLS but not by spls:", diff_in_Cpp, "\n")
+      cat("SNPs selected by both:", SNPs_Both, "\n")
+      cat("SNPs selected by GeneSPLS but not by spls:", SNPs_Cpp, "\n")
       
     }
   }

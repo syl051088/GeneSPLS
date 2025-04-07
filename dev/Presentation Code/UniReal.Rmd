@@ -71,6 +71,10 @@ rm(cv_uni_real_R, cv_uni_real_Cpp)
 ```{r SPLS, warning = FALSE}
 set.seed(815)
 
+K_uni_real_Cpp <- 1
+eta_uni_real_Cpp <- 0.99
+K_test <- 2
+eta_test <- 0.95
 
 # spls
 
@@ -85,10 +89,12 @@ spls_uni_real_R <- spls(
 # GeneSPLS
 
 spls_uni_real_Cpp <- spls_cpp(
-  X,
-  AKT3_Expression,
-  K = K_uni_real_Cpp,
-  eta = eta_uni_real_Cpp,
+  X_uni_real,
+  Y_uni_real,
+  K = K_test,
+  eta = eta_test,
+  # K = K_uni_real_Cpp,
+  # eta = eta_uni_real_Cpp,
   kappa = 0.5,
   select = "pls2",
   fit = "widekernelpls",
@@ -100,6 +106,7 @@ spls_uni_real_Cpp <- spls_cpp(
 
 # Valid coefficients match
 coef_valid(
+  X_uni_real,
   coef(spls_uni_real_R),
   spls_uni_real_Cpp$betahat,
   tolerance = 1e-6
