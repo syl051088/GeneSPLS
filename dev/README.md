@@ -263,6 +263,48 @@ A separate script (`Process_GeneExpression_Genotype.R`) is provided to harmonize
 - Generates a covariate matrix from genotype data.
 - Produces output files for downstream analysis (e.g., `akt3_expression.csv`, `genotype_matrix.rds`, and `gene_expression_matrix.rds`).
 
+---
+
+## Results from test_real_univariate.Rmd
+
+In this analysis, the GeneSPLS model was applied to real eQTL data focusing on the expression of the AKT3 gene. The primary aim was to identify SNPs that exhibit non-zero effects on AKT3 expression. Following model fitting and comparison between the R and Rcpp implementations, a set of six SNPs were selected based on their non-zero coefficient values. A detailed genomic lookup was performed to evaluate the proximity of these SNPs to AKT3.
+
+The genomic locations and gene annotations for the selected SNPs are summarized in the table below:
+
+| **SNP_ID** | **Chromosome** | **Position (bp)** (GRCh38) | **Nearby/Overlapping Gene(s)** | **Distance to AKT3**                      |
+|------------|----------------|----------------------------|--------------------------------|-------------------------------------------|
+| rs2898915  | 1              | 7,003,327                  | CAMTA1 (intron)                | ~236.5 Mb upstream of AKT3                 |
+| rs6691809  | 1              | 7,008,964                  | CAMTA1 (intron)                | ~236.5 Mb upstream of AKT3                 |
+| rs6577402  | 1              | 7,014,668                  | CAMTA1 (intron)                | ~236.5 Mb upstream of AKT3                 |
+| rs6693691  | 1              | 7,019,003                  | CAMTA1 (intron)                | ~236.5 Mb upstream of AKT3                 |
+| rs693196   | 9              | 15,202,419                 | TTC39B (intron)                | Not applicable (different chromosome)      |
+| rs7876026  | 9              | 15,202,817                 | TTC39B (intron)                | Not applicable (different chromosome)      |
+
+The findings indicate that the majority of the selected SNPs (rs2898915, rs6691809, rs6577402, rs6693691) are located on chromosome 1, within intronic regions of the CAMTA1 gene, while the remaining SNPs (rs693196 and rs7876026) reside on chromosome 9 within TTC39B. Notably, the AKT3 gene is located on chromosome 1 but in a distal region (~243.5–243.85 Mb), which is separated by more than 236 Mb from the CAMTA1 locus. Moreover, the SNPs on chromosome 9 are situated on an entirely different chromosome from AKT3.
+
+---
+
+## Conclusion
+
+The present study aimed to leverage the GeneSPLS methodology for eQTL analysis, specifically targeting the AKT3 gene. However, the genomic annotations of the SNPs selected by the model reveal a discrepancy: the non-zero coefficient SNPs identified by GeneSPLS are not in the cis-regulatory region of AKT3. Instead, the four chromosome 1 SNPs are located in the CAMTA1 gene region, which is approximately 236 Mb upstream of AKT3, and the two SNPs on chromosome 9 belong to a different genomic context (within TTC39B).
+
+This outcome suggests several potential interpretations:
+
+1. **Trans-eQTL Signals:** Although cis-eQTLs are generally expected to exhibit the strongest associations with gene expression, the possibility of trans-regulatory effects cannot be entirely dismissed. However, trans-eQTLs are usually subtler and require robust validation in larger datasets. The strong signals observed here may instead reflect model artifacts rather than genuine trans effects.
+
+2. **Model and Data Considerations:** The divergence from the anticipated cis-regulatory pattern may indicate issues with data preprocessing, such as overly stringent filtering thresholds or batch effects, or limitations in the parameter tuning process. It is critical to ensure that the filtering steps have not inadvertently removed true cis-variants for AKT3. The tuning parameters for sparsity and the number of latent components might also need adjustment to capture the expected regulatory variants.
+
+3. **Biological Implications:** If validated, the detected associations could hint at a more complex regulatory architecture for AKT3, potentially involving long-range chromosomal interactions or indirect regulatory networks. Nevertheless, given the substantial genomic distance between the selected SNPs and AKT3, the likelihood of such mechanisms should be carefully scrutinized.
+
+In conclusion, while the GeneSPLS framework demonstrates robust computational performance and an innovative approach to dimensionality reduction in high-dimensional genomic data, the current output for AKT3 does not conform to conventional expectations of cis-eQTL mapping. Future work should include:
+- A thorough review of data preprocessing and parameter tuning procedures.
+- Independent validation of the detected SNPs using larger cohorts or alternative statistical methods.
+- Exploration of potential trans-regulatory mechanisms if trans-eQTL signals are indeed present.
+
+Overall, these findings emphasize the importance of integrating biological context with statistical modeling and suggest that further refinement and validation of the GeneSPLS approach are warranted before drawing definitive conclusions about the genetic regulation of AKT3.
+
+---
+
 ## Project Structure
 
 ```
