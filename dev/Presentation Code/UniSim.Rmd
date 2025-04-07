@@ -3,6 +3,7 @@
 library(GeneSPLS)
 library(spls)
 library(microbenchmark)
+library(bench)
 
 data("UniSim") # load data
 source(here::here("dev", "coef_valid.R"))
@@ -175,3 +176,31 @@ print(bench_cv_uni_sim) # CV benchmark results
 print(bench_spls_uni_sim) # SPLS benchmark results
 ```
 
+```{r benchmark2}
+result = bench::mark(
+  spls_uni_sim_R = spls(
+    X_uni_sim,
+    Y_uni_sim,
+    K = K_uni_sim_Cpp,
+    eta = eta_uni_sim_Cpp,
+    fit = "widekernelpls"),
+  
+  spls_uni_sim_Cpp = spls_cpp(
+    X_uni_sim,
+    Y_uni_sim,
+    K = K_uni_sim_Cpp,
+    eta = eta_uni_sim_Cpp,
+    kappa = 0.5,
+    select = "pls2",
+    fit = "widekernelpls",
+    scale_x = TRUE,
+    scale_y = FALSE,
+    eps = 1e-4,
+    maxstep = 100,
+    trace = FALSE),
+  check = F,
+  iterations = 20
+)
+
+print(result)
+```

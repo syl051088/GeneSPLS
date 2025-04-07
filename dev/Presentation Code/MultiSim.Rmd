@@ -3,6 +3,7 @@
 library(GeneSPLS)
 library(spls)
 library(microbenchmark)
+library(bench)
 
 data("MultiSim") # load data
 source(here::here("dev", "coef_valid.R"))
@@ -173,4 +174,33 @@ bench_spls_multi_sim <- microbenchmark(
 ```{r benchmark results}
 print(bench_cv_multi_sim) # CV benchmark results
 print(bench_spls_multi_sim) # SPLS benchmark results
+```
+
+```{r benchmark2}
+result = bench::mark(
+  spls_multi_sim_R = spls(
+    X_multi_sim,
+    Y_multi_sim,
+    K = K_multi_sim_Cpp,
+    eta = eta_multi_sim_Cpp,
+    fit = "widekernelpls"),
+  
+  spls_multi_sim_Cpp = spls_cpp(
+    X_multi_sim,
+    Y_multi_sim,
+    K = K_multi_sim_Cpp,
+    eta = eta_multi_sim_Cpp,
+    kappa = 0.5,
+    select = "pls2",
+    fit = "widekernelpls",
+    scale_x = TRUE,
+    scale_y = FALSE,
+    eps = 1e-4,
+    maxstep = 100,
+    trace = FALSE),
+  check = F,
+  iterations = 20
+)
+
+print(result)
 ```
