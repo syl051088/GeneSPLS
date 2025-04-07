@@ -22,8 +22,8 @@ We load the genotype matrix (stored as an RDS file) and the AKT3 gene expression
 library(GeneSPLS)
 library(spls)
 # Load real data
-X <- readRDS("/home/yangtai/BIOSTAT815_Project/genotype_matrix.rds")
-Y <- read.csv("/home/yangtai/BIOSTAT815_Project/akt3_expression.csv", stringsAsFactors = FALSE)
+X <- readRDS("/Users/nszeto/University of Michigan Dropbox/Nathan Szeto/BIOSTAT815_Project_Data/gene_expression_matrix.rds")
+Y <- read.csv("/Users/nszeto/University of Michigan Dropbox/Nathan Szeto/BIOSTAT815_Project_Data/akt3_expression.csv", stringsAsFactors = FALSE)
 
 # Check dimensions and data meaning
 cat("Number of subjects in Y:", nrow(Y), "\n")

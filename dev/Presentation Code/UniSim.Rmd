@@ -80,8 +80,10 @@ spls_uni_sim_R <- spls(
 spls_uni_sim_Cpp <- spls_cpp(
   X_uni_sim,
   Y_uni_sim,
-  K = K_uni_sim_Cpp,
-  eta = eta_uni_sim_Cpp,
+  K = 100,
+  eta = 0.5,
+  # K = K_uni_sim_Cpp,
+  # eta = eta_uni_sim_Cpp,
   kappa = 0.5,
   select = "pls2",
   fit = "widekernelpls",
