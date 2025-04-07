@@ -28,7 +28,7 @@ test_that("Projection and coefficients match between R and C++ for multivariate 
   ncomp <- 5
   
   # Run R implementation
-  pls_r <- plsr(cbind(Y1, Y2, Y3) ~ ., 
+  pls_r <- pls::plsr(cbind(Y1, Y2, Y3) ~ ., 
                 data = sim_data, 
                 ncomp = ncomp, 
                 method = "widekernelpls", 

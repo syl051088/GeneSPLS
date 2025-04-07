@@ -43,6 +43,12 @@
 //' pls_cpp$projection
 //' pls_cpp$coefficients
 //' 
+//' @useDynLib GeneSPLS, .registration = TRUE
+//' @import Rcpp
+//' 
+//' @export
+//' 
+// [[Rcpp::export]]
 Rcpp::List widekernelpls_fit(arma::mat X,
                              arma::mat Y,
                              int ncomp,

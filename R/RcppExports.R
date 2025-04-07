@@ -90,7 +90,14 @@ cv_spls_cpp <- function(x, y, fold, eta, K, kappa, select, scale_x, scale_y, eps
 #' pls_cpp$projection
 #' pls_cpp$coefficients
 #' 
-NULL
+#' @useDynLib GeneSPLS, .registration = TRUE
+#' @import Rcpp
+#' 
+#' @export
+#' 
+widekernelpls_fit <- function(X, Y, ncomp, center = TRUE, tol = 1.5e-8, maxit = 100L) {
+    .Call(`_GeneSPLS_widekernelpls_fit`, X, Y, ncomp, center, tol, maxit)
+}
 
 #' @name spls_cpp
 #' @title Sparse Partial Least Squares Regression

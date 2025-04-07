@@ -2,5 +2,6 @@
 
 export(cv_spls_cpp)
 export(spls_cpp)
+export(widekernelpls_fit)
 import(Rcpp)
 useDynLib(GeneSPLS, .registration = TRUE)

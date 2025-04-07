@@ -33,6 +33,22 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// widekernelpls_fit
+Rcpp::List widekernelpls_fit(arma::mat X, arma::mat Y, int ncomp, bool center, double tol, int maxit);
+RcppExport SEXP _GeneSPLS_widekernelpls_fit(SEXP XSEXP, SEXP YSEXP, SEXP ncompSEXP, SEXP centerSEXP, SEXP tolSEXP, SEXP maxitSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< int >::type ncomp(ncompSEXP);
+    Rcpp::traits::input_parameter< bool >::type center(centerSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< int >::type maxit(maxitSEXP);
+    rcpp_result_gen = Rcpp::wrap(widekernelpls_fit(X, Y, ncomp, center, tol, maxit));
+    return rcpp_result_gen;
+END_RCPP
+}
 // spls_cpp
 Rcpp::List spls_cpp(arma::mat x, arma::mat y, int K, double eta, double kappa, std::string select, std::string fit, bool scale_x, bool scale_y, double eps, int maxstep, bool trace);
 RcppExport SEXP _GeneSPLS_spls_cpp(SEXP xSEXP, SEXP ySEXP, SEXP KSEXP, SEXP etaSEXP, SEXP kappaSEXP, SEXP selectSEXP, SEXP fitSEXP, SEXP scale_xSEXP, SEXP scale_ySEXP, SEXP epsSEXP, SEXP maxstepSEXP, SEXP traceSEXP) {
@@ -58,6 +74,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_GeneSPLS_cv_spls_cpp", (DL_FUNC) &_GeneSPLS_cv_spls_cpp, 12},
+    {"_GeneSPLS_widekernelpls_fit", (DL_FUNC) &_GeneSPLS_widekernelpls_fit, 6},
     {"_GeneSPLS_spls_cpp", (DL_FUNC) &_GeneSPLS_spls_cpp, 12},
     {NULL, NULL, 0}
 };
