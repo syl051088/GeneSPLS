@@ -137,6 +137,33 @@ if(identical(nonzero_idx_r, nonzero_idx_cpp)) {
   }
 }
 
+# Extract non-zero coefficients from the R model (assuming nonzero_idx_r is the final set)
+selected_snp_ids <- colnames(X)[nonzero_idx_r]
+selected_coef <- coef_r[nonzero_idx_r]
+
+# Create a dataframe “Key_SNPs” with SNP IDs, an index, and absolute coefficient values
+Key_SNPs <- data.frame(SNP_ID = selected_snp_ids,
+                     SNP_Index = seq_along(selected_snp_ids),
+                     Abs_Coefficient = abs(selected_coef))
+
+# Output the dataframe for reference
+print(head(Key_SNPs))
+
+# Create a pseudo-Manhattan plot using ggplot2
+# Restrict the y-axis to (0.107, 0.112) as requested
+ggplot(Key_SNPs, aes(x = SNP_Index, y = Abs_Coefficient, color = factor(SNP_Index))) +
+  geom_point(size = 3, alpha = 0.8) +
+  coord_cartesian(ylim = c(0.107, 0.112)) +
+  scale_color_brewer(palette = "Dark2") +
+  labs(title = "Pseudo-Manhattan Plot of Selected SNPs",
+       x = "SNP Index (Ordered by Appearance)",
+       y = "Absolute Coefficient Value") +
+  theme_bw(base_size = 14) +
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5, face = "bold"),
+        axis.title = element_text(face = "bold"),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank())
 ```
 
 ------------------------------------------------------------------------
