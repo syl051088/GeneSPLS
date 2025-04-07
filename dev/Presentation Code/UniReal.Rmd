@@ -5,6 +5,12 @@ library(spls)
 library(microbenchmark)
 library(bench)
 
+knitr::opts_chunk$set(
+  cache = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  cache.lazy = FALSE)
+
 data("UniReal") # load data
 source(here::here("dev", "coef_valid.R"))
 ```
@@ -13,7 +19,7 @@ source(here::here("dev", "coef_valid.R"))
 ### CROSS-VALIDATION
 
 ```{r CV, warning = FALSE}
-set.seed(815)
+set.seed(226)
 
 
 # Define candidate parameters
@@ -48,8 +54,8 @@ cv_uni_real_Cpp <- cv_spls_cpp(
   select = "pls2",
   scale_x = TRUE,
   scale_y = FALSE,
-  eps = 2e-3,
-  maxstep = 10000,
+  eps = 1e-4,
+  maxstep = 100,
   trace = FALSE)
 
 eta_uni_real_R <- cv_uni_real_R$eta.opt
@@ -79,8 +85,8 @@ spls_uni_real_R <- spls(
 # GeneSPLS
 
 spls_uni_real_Cpp <- spls_cpp(
-  X_uni_real,
-  Y_uni_real,
+  X,
+  AKT3_Expression,
   K = K_uni_real_Cpp,
   eta = eta_uni_real_Cpp,
   kappa = 0.5,
@@ -98,19 +104,6 @@ coef_valid(
   spls_uni_real_Cpp$betahat,
   tolerance = 1e-6
 )
-
-df <- data.frame(
-  x = seq_along(spls_uni_real_Cpp$betahat),
-  y = spls_uni_real_Cpp$betahat
-)
-
-library(ggplot2)
-ggplot(df, aes(x = x, y = y)) +
-  geom_point() +
-  geom_hline(yintercept = 0, color = "gray") +
-  labs(title = "SPLS Coefficients",
-       x = "Feature Index", y = expression(hat(beta))) +
-  theme_minimal()
 ```
 
 
@@ -191,6 +184,7 @@ print(bench_spls_uni_real) # SPLS benchmark results
 
 ```{r benchmark2}
 result = bench::mark(
+  
   spls_uni_real_R = spls(
     X_uni_real,
     Y_uni_real,
@@ -211,7 +205,9 @@ result = bench::mark(
     eps = 1e-4,
     maxstep = 100,
     trace = FALSE),
+  
   check = F,
+  
   iterations = 20
 )
 
