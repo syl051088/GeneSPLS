@@ -100,10 +100,22 @@ spls_multi_sim_Cpp <- spls_cpp(
 
 # Valid coefficients match
 coef_valid(
+  X_multi_sim,
   coef(spls_multi_sim_R),
   spls_multi_sim_Cpp$betahat,
   tolerance = 1e-6
 )
+
+### DEV CODE FOR VISUALIZATION - DELETE FOR PRESENTATION ###
+# We should eventually have plots to visualize these data
+coef_r <- coef(spls_model_r)
+abs_coef_r <- abs(coef_r)
+coef_cpp <- spls_model_cpp$betahat
+
+nonzero_counts <- colSums(coef_r != 0)
+
+View(spls_model_r$projection)
+View(abs_coef_r)
 ```
 
 

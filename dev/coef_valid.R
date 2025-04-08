@@ -3,6 +3,8 @@ coef_valid <- function(X, coef_R, coef_Cpp, tolerance = 1e-6) {
   # Identify non-zero coefficients using linear indices
   nonzero_idx_R <- which(coef_R != 0)
   nonzero_idx_Cpp <- which(coef_Cpp != 0)
+  both <- intersect(nonzero_idx_R, nonzero_idx_Cpp)
+  SNPs_Both <- colnames(X)[both]
   
   cat("Number of non-zero coefficients (spls):", length(nonzero_idx_R), "\n")
   cat("Number of non-zero coefficients (GeneSPLS):", length(nonzero_idx_Cpp), "\n")
@@ -11,6 +13,7 @@ coef_valid <- function(X, coef_R, coef_Cpp, tolerance = 1e-6) {
   if(identical(nonzero_idx_R, nonzero_idx_Cpp)) {
     
     cat("Selected SNPs are identical between the two models.\n")
+    cat("SNPs selected:", SNPs_Both, "\n")
     
     max_diff <- max(abs(coef_R[nonzero_idx_R] - coef_Cpp[nonzero_idx_R]))
     
@@ -31,8 +34,6 @@ coef_valid <- function(X, coef_R, coef_Cpp, tolerance = 1e-6) {
     # Report differences in indices
     diff_in_R <- setdiff(nonzero_idx_R, nonzero_idx_Cpp)
     diff_in_Cpp <- setdiff(nonzero_idx_Cpp, nonzero_idx_R)
-    both <- intersect(nonzero_idx_R, nonzero_idx_Cpp)
-    SNPs_Both <- colnames(X)[both]
     SNPs_R <- colnames(X)[diff_in_R]
     SNPs_Cpp <- colnames(X)[diff_in_Cpp]
     

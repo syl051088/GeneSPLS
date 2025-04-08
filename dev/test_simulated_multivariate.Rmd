@@ -120,16 +120,25 @@ We fit SPLS regression models using both the original R function `spls()` and th
 
 ```{r fit-spls, echo=TRUE}
 # Fit SPLS model using the original R function
-spls_model_r <- spls(X, Y, K = best_K, eta = best_eta, fit = "widekernelpls")
+spls_model_r <- spls(
+  X,
+  Y,
+  K = best_K,
+  eta = best_eta,
+  fit = "widekernelpls")
 
 # Fit SPLS model using the Rcpp version
-spls_model_cpp <- spls_cpp(X, Y, K = best_K, eta = best_eta, kappa = 0.5, 
-                           select = "pls2", fit = "widekernelpls", scale_x = TRUE, scale_y = FALSE,
-                           eps = 1e-4, maxstep = 100, trace = FALSE)
-
-# Extract coefficient matrices
-coef_r <- coef(spls_model_r)
-coef_cpp <- spls_model_cpp$betahat
+spls_model_cpp <- spls_cpp(X, Y,
+                           K = best_K,
+                           eta = best_eta,
+                           kappa = 0.5, 
+                           select = "pls2",
+                           fit = "widekernelpls",
+                           scale_x = TRUE,
+                           scale_y = FALSE,
+                           eps = 1e-4,
+                           maxstep = 1000,
+                           trace = FALSE)
 ```
 
 ------------------------------------------------------------------------

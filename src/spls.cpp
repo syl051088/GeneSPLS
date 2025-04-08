@@ -34,10 +34,18 @@
 //' @export
 //' 
 // [[Rcpp::export]]
-Rcpp::List spls_cpp(arma::mat x, arma::mat y, int K, double eta, double kappa = 0.5,
-                    std::string select = "pls2", std::string fit = "widekernelpls",
-                    bool scale_x = true, bool scale_y = false, 
-                    double eps = 1e-4, int maxstep = 100, bool trace = false) {
+Rcpp::List spls_cpp(arma::mat x,
+                    arma::mat y,
+                    int K,
+                    double eta,
+                    double kappa,
+                    std::string select,
+                    std::string fit,
+                    bool scale_x,
+                    bool scale_y,
+                    double eps,
+                    int maxstep,
+                    bool trace) {
  
  // Initialize
  int n = x.n_rows;
@@ -125,7 +133,7 @@ Rcpp::List spls_cpp(arma::mat x, arma::mat y, int K, double eta, double kappa = 
      int ncomp = std::min(k+1, static_cast<int>(A.n_elem));
      
      // Use widekernelpls_fit (assuming center=false like in the R code)
-     Rcpp::List plsfit = widekernelpls_fit(xA, y, ncomp, false, 1.5e-8, 100);
+     Rcpp::List plsfit = widekernelpls_fit(xA, y, ncomp, false, 1.5e-8, maxstep);
      
      // Extract coefficients for the last component
      arma::cube B = Rcpp::as<arma::cube>(plsfit["coefficients"]);

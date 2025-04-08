@@ -127,7 +127,7 @@ widekernelpls_fit <- function(X, Y, ncomp, center = TRUE, tol = 1.5e-8, maxit = 
 #' 
 #' @export
 #' 
-spls_cpp <- function(x, y, K, eta, kappa = 0.5, select = "pls2", fit = "widekernelpls", scale_x = TRUE, scale_y = FALSE, eps = 1e-4, maxstep = 100L, trace = FALSE) {
+spls_cpp <- function(x, y, K, eta, kappa, select, fit, scale_x, scale_y, eps, maxstep, trace) {
     .Call(`_GeneSPLS_spls_cpp`, x, y, K, eta, kappa, select, fit, scale_x, scale_y, eps, maxstep, trace)
 }
 
