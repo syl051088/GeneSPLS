@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
   cache.lazy = FALSE)
 
 data("UniSim") # load data
-source(here::here("dev", "helper.R"))
+source(here::here("R", "helper.R"))
 ```
 
 
