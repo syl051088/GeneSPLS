@@ -12,7 +12,7 @@ knitr::opts_chunk$set(
   cache.lazy = FALSE)
 
 data("MultiSim") # load data
-source(here::here("dev", "coef_valid.R"))
+source(here::here("dev", "helper.R"))
 ```
 
 

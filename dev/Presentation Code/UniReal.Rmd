@@ -4,6 +4,7 @@ library(GeneSPLS)
 library(spls)
 library(microbenchmark)
 library(bench)
+library(tidyverse)
 
 knitr::opts_chunk$set(
   cache = TRUE,
@@ -12,7 +13,7 @@ knitr::opts_chunk$set(
   cache.lazy = FALSE)
 
 data("UniReal") # load data
-source(here::here("dev", "coef_valid.R"))
+source(here::here("dev", "helper.R"))
 ```
 
 
@@ -103,6 +104,14 @@ coef_valid(
   coef(spls_uni_real_R),
   spls_uni_real_Cpp$betahat,
   tolerance = 1e-6
+)
+```
+
+```{r Coefficient plot}
+sens_plot(
+  X_uni_real,
+  Y_uni_real,
+  eta = eta_candidates
 )
 ```
 
