@@ -106,7 +106,7 @@ sens_plot <- function(
       min(floor(data$Abs_Coefficient * 100) / 100),
       max(ceiling(data$Abs_Coefficient * 100) / 100))) +
     scale_color_brewer(palette = "Dark2") +
-    labs(title = expression("Coefficients for Selected SNPs by " * eta),
+    labs(title = bquote("Coefficients for Selected SNPs by " * eta * " for K = " * .(K)),
          x = "SNP ID",
          y = expression("|"~hat(beta)~"|"),
          color = expression(eta)) +
@@ -115,6 +115,7 @@ sens_plot <- function(
           legend.title = element_text(face = "bold"),
           plot.title = element_text(hjust = 0.5, face = "bold"),
           axis.title = element_text(face = "bold"),
+          axis.text.x = element_text(angle = 45, hjust = 1),
           panel.grid.major.x = element_blank(),
           panel.grid.minor.x = element_blank())
 }
