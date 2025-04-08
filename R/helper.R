@@ -83,7 +83,6 @@ sens_plot <- function(
     coef <- spls_mod$betahat
     coef_idx <- which(coef != 0)
     coef <- coef[coef_idx]
-    print(coef)
     ids <- colnames(X)[coef_idx]
     data <- rbind(
       data,
