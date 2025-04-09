@@ -15,6 +15,8 @@ knitr::opts_chunk$set(
   message = FALSE,
   cache.lazy = FALSE
 )
+
+source(here::here("R", "helper.R"))
 ```
 
 # GeneSPLS
@@ -43,6 +45,7 @@ This is a basic example which simulates genotype data with a univariate outcome,
 
 ```{r example}
 library(GeneSPLS)
+library(tidyverse)
 set.seed(815)
 
 ### SIMULATE DATA
@@ -100,6 +103,61 @@ spls.model <- spls_cpp(
   maxstep = 100,
   trace = FALSE)
 
-# Output non-zero estimated coefficients
-spls.model$betahat[spls.model$betahat != 0]
+# Plot non-zero estimated coefficients
+sens_plot(
+  X,
+  Y,
+  eta = c(best_eta),
+  K = best_K)
 ```
+
+
+## File Structure
+
+GeneSPLS
+├── DESCRIPTION
+├── GeneSPLS.Rproj
+├── LICENSE
+├── NAMESPACE
+├── R
+│   ├── RcppExports.R
+│   └── helper.R
+├── README.Rmd
+├── README.md
+├── man
+│   ├── correctp.Rd
+│   ├── cv_spls_cpp.Rd
+│   ├── figures
+│   ├── spls_cpp.Rd
+│   ├── spls_dv.Rd
+│   ├── ust.Rd
+│   └── widekernelpls_fit.Rd
+├── src
+│   ├── GeneSPLS.dll
+│   ├── GeneSPLS.so
+│   ├── Makevars
+│   ├── Makevars.win
+│   ├── RcppExports.cpp
+│   ├── RcppExports.o
+│   ├── correctp.cpp
+│   ├── correctp.h
+│   ├── correctp.o
+│   ├── cv.spls.cpp
+│   ├── cv.spls.h
+│   ├── cv.spls.o
+│   ├── pls.cpp
+│   ├── pls.h
+│   ├── pls.o
+│   ├── spls.cpp
+│   ├── spls.h
+│   ├── spls.o
+│   ├── spls_dv.cpp
+│   ├── spls_dv.h
+│   └── spls_dv.o
+├── tests
+│   ├── testthat
+│   │   ├── test-widekernelpls.R
+│   │   └── test.Rmd
+│   └── testthat.R
+└── vignettes
+    └── Tutorial.Rmd
