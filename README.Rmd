@@ -15,8 +15,6 @@ knitr::opts_chunk$set(
   message = FALSE,
   cache.lazy = FALSE
 )
-
-source(here::here("R", "helper.R"))
 ```
 
 # GeneSPLS
@@ -47,6 +45,8 @@ This is a basic example which simulates genotype data with a univariate outcome,
 library(GeneSPLS)
 library(tidyverse)
 set.seed(815)
+
+source(here::here("R", "helper.R"))
 
 ### SIMULATE DATA
 
@@ -108,7 +108,7 @@ spls.model <- spls_cpp(
 sens_plot(
   X,
   Y,
-  eta = c(0.8),
+  eta = c(0.85),
   K = 1)
 ```
 

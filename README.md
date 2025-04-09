@@ -47,6 +47,8 @@ library(GeneSPLS)
 library(tidyverse)
 set.seed(815)
 
+source(here::here("R", "helper.R"))
+
 ### SIMULATE DATA
 
 # Simulating high-dimensional predictor matrix (p >> n)
@@ -91,7 +93,7 @@ cv_result_cpp <- cv_spls_cpp(
 #> eta = 0.8
 #> eta = 0.9
 #> 
-#> Optimal parameters: eta = 0.1, K = 2
+#> Optimal parameters: eta = 0.2, K = 3
 
 best_eta <- cv_result_cpp$eta.opt # Optimal sparsity parameter
 best_K <- cv_result_cpp$K.opt # Optimal latent components
@@ -118,7 +120,7 @@ spls.model <- spls_cpp(
 sens_plot(
   X,
   Y,
-  eta = c(0.8),
+  eta = c(0.85),
   K = 1)
 ```
 
