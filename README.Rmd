@@ -104,16 +104,18 @@ spls.model <- spls_cpp(
   trace = FALSE)
 
 # Plot non-zero estimated coefficients
+# Note: fit simple model for plot clarify
 sens_plot(
   X,
   Y,
-  eta = c(best_eta),
-  K = best_K)
+  eta = c(0.8),
+  K = 1)
 ```
 
 
 ## File Structure
 
+```text
 GeneSPLS
 ├── DESCRIPTION
 ├── GeneSPLS.Rproj
@@ -161,3 +163,4 @@ GeneSPLS
 │   └── testthat.R
 └── vignettes
     └── Tutorial.Rmd
+```

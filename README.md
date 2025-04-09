@@ -91,7 +91,7 @@ cv_result_cpp <- cv_spls_cpp(
 #> eta = 0.8
 #> eta = 0.9
 #> 
-#> Optimal parameters: eta = 0.3, K = 4
+#> Optimal parameters: eta = 0.1, K = 2
 
 best_eta <- cv_result_cpp$eta.opt # Optimal sparsity parameter
 best_K <- cv_result_cpp$K.opt # Optimal latent components
@@ -114,26 +114,64 @@ spls.model <- spls_cpp(
   trace = FALSE)
 
 # Plot non-zero estimated coefficients
+# Note: fit simple model for plot clarify
 sens_plot(
   X,
   Y,
-  eta = c(best_eta),
-  K = best_K)
+  eta = c(0.8),
+  K = 1)
 ```
 
 <img src="man/figures/README-example-1.png" width="100%" />
 
 ## File Structure
 
-GeneSPLS ├── DESCRIPTION ├── GeneSPLS.Rproj ├── LICENSE ├── NAMESPACE
-├── R │   ├── RcppExports.R │   └── helper.R ├── README.Rmd ├──
-README.md ├── man │   ├── correctp.Rd │   ├── cv_spls_cpp.Rd │   ├──
-figures │   ├── spls_cpp.Rd │   ├── spls_dv.Rd │   ├── ust.Rd │   └──
-widekernelpls_fit.Rd ├── src │   ├── GeneSPLS.dll │   ├── GeneSPLS.so
-│   ├── Makevars │   ├── Makevars.win │   ├── RcppExports.cpp │   ├──
-RcppExports.o │   ├── correctp.cpp │   ├── correctp.h │   ├── correctp.o
-│   ├── cv.spls.cpp │   ├── cv.spls.h │   ├── cv.spls.o │   ├── pls.cpp
-│   ├── pls.h │   ├── pls.o │   ├── spls.cpp │   ├── spls.h │   ├──
-spls.o │   ├── spls_dv.cpp │   ├── spls_dv.h │   └── spls_dv.o ├── tests
-│   ├── testthat │   │   ├── test-widekernelpls.R │   │   └── test.Rmd
-│   └── testthat.R └── vignettes └── Tutorial.Rmd
+``` text
+GeneSPLS
+├── DESCRIPTION
+├── GeneSPLS.Rproj
+├── LICENSE
+├── NAMESPACE
+├── R
+│   ├── RcppExports.R
+│   └── helper.R
+├── README.Rmd
+├── README.md
+├── man
+│   ├── correctp.Rd
+│   ├── cv_spls_cpp.Rd
+│   ├── figures
+│   ├── spls_cpp.Rd
+│   ├── spls_dv.Rd
+│   ├── ust.Rd
+│   └── widekernelpls_fit.Rd
+├── src
+│   ├── GeneSPLS.dll
+│   ├── GeneSPLS.so
+│   ├── Makevars
+│   ├── Makevars.win
+│   ├── RcppExports.cpp
+│   ├── RcppExports.o
+│   ├── correctp.cpp
+│   ├── correctp.h
+│   ├── correctp.o
+│   ├── cv.spls.cpp
+│   ├── cv.spls.h
+│   ├── cv.spls.o
+│   ├── pls.cpp
+│   ├── pls.h
+│   ├── pls.o
+│   ├── spls.cpp
+│   ├── spls.h
+│   ├── spls.o
+│   ├── spls_dv.cpp
+│   ├── spls_dv.h
+│   └── spls_dv.o
+├── tests
+│   ├── testthat
+│   │   ├── test-widekernelpls.R
+│   │   └── test.Rmd
+│   └── testthat.R
+└── vignettes
+    └── Tutorial.Rmd
+```
