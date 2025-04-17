@@ -267,20 +267,27 @@ A separate script (`Process_GeneExpression_Genotype.R`) is provided to harmonize
 
 ## Results from test_real_univariate.Rmd
 
-In this analysis, the GeneSPLS model was applied to real eQTL data focusing on the expression of the AKT3 gene. The primary aim was to identify SNPs that exhibit non-zero effects on AKT3 expression. Following model fitting and comparison between the R and Rcpp implementations, a set of six SNPs were selected based on their non-zero coefficient values. A detailed genomic lookup was performed to evaluate the proximity of these SNPs to AKT3.
+In this analysis, the GeneSPLS model was applied to real eQTL data focusing on the expression of the AKT3 gene. The primary aim was to identify SNPs that exhibit non-zero effects on AKT3 expression. After tuning the SPLS models over a range of sparsity levels (optimal `η` from 0.95 to 0.99 based on cross-validation), a total of 7 SNPs were selected as important features. Notably, **4 SNPs** (listed in **bold** in the table below) were consistently selected across all SPLS model fits, indicating robust associations. These SNPs map to two distinct genomic regions: three lie on chromosome 1p36 and the remainder on chromosome 9p22, as summarized in **Table 1**.
 
-The genomic locations and gene annotations for the selected SNPs are summarized in the table below:
+**Table 1.** Genomic location, gene annotation, and distance to AKT3 of the 7 selected SNPs (GRCh38). SNPs in **bold** were consistently selected in all SPLS models.
 
-| **SNP_ID** | **Chromosome** | **Position (bp)** (GRCh38) | **Nearby/Overlapping Gene(s)** | **Distance to AKT3**                      |
-|------------|----------------|----------------------------|--------------------------------|-------------------------------------------|
-| rs2898915  | 1              | 7,003,327                  | CAMTA1 (intron)                | ~236.5 Mb upstream of AKT3                 |
-| rs6691809  | 1              | 7,008,964                  | CAMTA1 (intron)                | ~236.5 Mb upstream of AKT3                 |
-| rs6577402  | 1              | 7,014,668                  | CAMTA1 (intron)                | ~236.5 Mb upstream of AKT3                 |
-| rs6693691  | 1              | 7,019,003                  | CAMTA1 (intron)                | ~236.5 Mb upstream of AKT3                 |
-| rs693196   | 9              | 15,202,419                 | TTC39B (intron)                | Not applicable (different chromosome)      |
-| rs7876026  | 9              | 15,202,817                 | TTC39B (intron)                | Not applicable (different chromosome)      |
+| **SNP (rsID)**   | **Chromosome: Position** | **Gene (Annotation)**       | **Distance to AKT3**                          |
+|------------------|--------------------------|-----------------------------|-----------------------------------------------|
+| **rs6691809**    | 1:7008964                | CAMTA1 (intronic variant)   | ~236.5 Mb upstream of AKT3                    |
+| **rs6577402**    | 1:7014668                | CAMTA1 (intronic variant)   | ~236.5 Mb upstream of AKT3                    |
+| rs2412208       | 1:7032722                | CAMTA1 (intronic variant)   | ~236.5 Mb upstream of AKT3                    |
+| **rs693196**     | 9:15202419               | TTC39B (intronic variant)   | Not applicable (different chromosome)         |
+| **rs7876026**    | 9:15202817               | TTC39B (intronic variant)   | Not applicable (different chromosome)         |
+| rs508314        | 9:15189274               | TTC39B (intronic variant)   | Not applicable (different chromosome)         |
+| rs1407977       | 9:15188108               | TTC39B (missense variant)   | Not applicable (different chromosome)         |
 
-The findings indicate that the majority of the selected SNPs (rs2898915, rs6691809, rs6577402, rs6693691) are located on chromosome 1, within intronic regions of the CAMTA1 gene, while the remaining SNPs (rs693196 and rs7876026) reside on chromosome 9 within TTC39B. Notably, the AKT3 gene is located on chromosome 1 but in a distal region (~243.5–243.85 Mb), which is separated by more than 236 Mb from the CAMTA1 locus. Moreover, the SNPs on chromosome 9 are situated on an entirely different chromosome from AKT3.
+Most of the chromosome 1 SNPs lie within the _CAMTA1_ gene (Calmodulin-binding transcription activator 1). _CAMTA1_ is a known anti-tumor gene that plays a role in cell cycle regulation by inhibiting AKT phosphorylation ([CAMTA1 calmodulin binding transcription activator 1 [Homo sapiens (human)] - Gene - NCBI](https://www.ncbi.nlm.nih.gov/gene/23261#:~:text=Title%3A%20CAMTA1%2C%20a%20novel%20antitumor,glioma%20by%20inhibiting%20AKT%20phosphorylation)). This is biologically relevant because phosphorylation of AKT is a key activation step in the AKT signaling pathway, which promotes cell growth and survival. Higher levels of phospho-AKT are associated with more aggressive cell proliferation ([
+            AKT3 promotes prostate cancer proliferation cells through regulation of Akt, B-Raf & TSC1/TSC2 - PMC
+        ](https://pmc.ncbi.nlm.nih.gov/articles/PMC4694976/#:~:text=match%20at%20L354%20,of%20prostate%20cancer%20cells%20both)), and AKT3 (one of the three AKT isoforms) is expressed in many tissues and contributes to cell proliferation – silencing AKT3 can suppress cell growth in cancer models ([
+            AKT3 promotes prostate cancer proliferation cells through regulation of Akt, B-Raf & TSC1/TSC2 - PMC
+        ](https://pmc.ncbi.nlm.nih.gov/articles/PMC4694976/#:~:text=match%20at%20L354%20,of%20prostate%20cancer%20cells%20both)). The _CAMTA1_ locus is located on chromosome 1p36 (around 7.0 Mb ([GWAS Catalog - EMBL-EBI](https://www.ebi.ac.uk/gwas/search?query=CAMTA1#:~:text=GWAS%20Catalog%20,V%20rs11588880%20%28rs147096589%29))), approximately 236.5 Mb upstream of the _AKT3_ gene at 1q43-q44 (around 243.5 Mb ([Gene: AKT3 (ENSG00000117020) - Summary - Homo_sapiens - Ensembl genome browser 113](http://www.ensembl.org/id/ENSG00000117020#:~:text=Location))). While _CAMTA1_ and _AKT3_ are not neighboring genes, the fact that _CAMTA1_ can modulate AKT activity provides a plausible functional link between the chromosome 1p36 variants and AKT-related cell cycle control. In other words, the SPLS-selected SNPs in _CAMTA1_ point to a mechanism whereby altered CAMTA1 activity might influence AKT phosphorylation status and thus downstream AKT3 signaling.
+
+By contrast, the remaining SNPs reside on chromosome 9 in the _TTC39B_ gene (tetratricopeptide repeat domain 39B) at 9p22.3. Two of these (**rs693196** and **rs7876026**) were consistently selected across all models (Table 1), and all four chromosome 9 variants fall within intronic regions of _TTC39B_ (except for rs1407977, which is a missense variant in an exon). _TTC39B_ encodes a protein involved in metabolic processes – for instance, it has been implicated in regulation of cholesterol homeostasis ([TTC39B tetratricopeptide repeat domain 39B [Homo sapiens (human)] - Gene - NCBI](https://www.ncbi.nlm.nih.gov/gene/158219#:~:text=Summary%20Predicted%20to%20be%20involved,of%20Genome%20Resources%2C%20Apr%202025)) – and is not known to be directly connected to the AKT pathway. The enrichment of SPLS-selected SNPs in _TTC39B_ therefore suggests a second, independent locus that may influence the outcome through a different biological mechanism. In summary, our SPLS analysis identified two genomic regions of interest: a chromosome 1 locus in _CAMTA1_ linked to cell cycle regulation via the AKT signaling axis, and a chromosome 9 locus in _TTC39B_ that may represent a novel association deserving further investigation. 
 
 ---
 
