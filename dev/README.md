@@ -249,12 +249,31 @@ Ensure that you have the GNU General Public License v3.0 for licensing.
 ## Walkthrough & Usage
 
 ### Simulated Data Analysis
-- **test_simulated_univariate.Rmd**: Demonstrates SPLS regression on simulated data with a single continuous outcome. It covers data simulation, parameter tuning using cross-validation, model fitting using both the R and Rcpp implementations, and benchmarking.
-- **test_simulated_multivariate.Rmd**: Extends the analysis to simulated gene expression data with multivariate outcomes. It follows similar steps as the univariate analysis but emphasizes the multivariate model's consistency and efficiency.
+- **test_simulated_univariate.Rmd**  
+  This vignette generates a high‑dimensional predictor matrix \(X\) (with \(p \gg n\)) and a univariate response \(y\) under a known sparse coefficient vector. It then:  
+  1. **Simulates** \(X \sim N(0,1)\) and \(y = X\beta + \varepsilon\), with only a small subset of entries in \(\beta\) non‑zero.  
+  2. **Tunes** the SPLS sparsity parameter (`eta`) and number of components (`K`) via 5‑fold cross‑validation using `cv_spls_cpp()`.  
+  3. **Fits** SPLS models with both the native R implementation (`spls()`) and the Rcpp version (`spls_cpp()`), using the optimal \(\eta\) and \(K\).  
+  4. **Evaluates** performance by comparing recovery of the true non‐zero coefficients (variable selection accuracy) and prediction mean‐squared error.  
+  5. **Benchmarks** computational speed of the two implementations with `microbenchmark()`.  
+
+- **test_simulated_multivariate.Rmd**  
+  Building on the univariate case, this script simulates a multivariate response matrix \(Y\) with multiple correlated outcomes:  
+  1. **Generates** \(X\) as before and a response \(Y = X B + E\), where only a small subset of rows of \(B\) are non‑zero, and the noise matrix \(E\) induces correlation across outcomes.  
+  2. **Performs** 5‑fold cross‑validation over grids of `eta` and `K` to select tuning parameters for each method.  
+  3. **Fits** both `spls()` and `spls_cpp()` on the multivariate data, extracting sparse coefficient estimates and latent scores.  
+  4. **Assesses** model consistency by checking stability of variable selection across methods and computing multivariate prediction error.  
+  5. **Profiles** run‐time via `microbenchmark()`, highlighting scalability in the multivariate setting.  
 
 ### Real Data Analysis
-- **test_real_univariate.Rmd**: Applies SPLS regression to real eQTL data, specifically focusing on the AKT3 gene expression levels. The script includes data loading, preprocessing (filtering SNPs by standard deviation), parameter tuning, model fitting, and result comparison.
-- **test_real_multivariate.Rmd**: Analyzes real gene expression data with multivariate outcomes. It demonstrates how to select a subset of genes as outcomes and compares SPLS implementations for performance.
+- **test_real_univariate.Rmd**  
+  This workflow applies GeneSPLS to a real eQTL dataset for the AKT3 gene:  
+  1. **Loads** genotype data (`genotype_matrix.rds`) and AKT3 expression (`akt3_expression.csv`), aligning sample orders.  
+  2. **Filters** SNPs with low variance (SD ≤ 0.2) to remove uninformative loci.  
+  3. **Tunes** SPLS parameters (`eta`, `K`) via `cv_spls_cpp()` over a fine grid (\(\eta=0.95\)–0.99, \(K=1\)–10).  
+  4. **Fits** sparse models using both the R (`spls()`) and Rcpp (`spls_cpp()`) implementations with the optimal settings.  
+  5. **Compares** selected SNPs and coefficient estimates between implementations, ensuring identical non‑zero patterns and coefficient agreement within a tight tolerance.  
+  6. **Visualizes** the final SPLS‑selected SNPs in a pseudo‑Manhattan plot and outputs a table of SNP IDs for downstream interpretation.
 
 ### Data Preprocessing
 A separate script (`Process_GeneExpression_Genotype.R`) is provided to harmonize and process the genotype and gene expression datasets (sourced from the Geuvadis consortium). This script:
