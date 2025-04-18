@@ -284,13 +284,45 @@ A separate script (`Process_GeneExpression_Genotype.R`) is provided to harmonize
 
 ---
 
+## Results from test_simulated_univariate.Rmd
+
+In this simulation study, we generated univariate outcomes with a single true predictor (SNP_3939) and applied both the R **spls** implementation and our GeneSPLS C++ implementation. Candidate sparsity levels (`η`) ranged from 0.95 to 0.99 and number of components $K$ from 1 to 10. Cross‐validation via `cv_spls_cpp` selected
+
+- **Optimal parameters**: $\eta = 0.99$, $K = 1$.
+
+Fitting the SPLS model with these parameters yielded:
+
+- **Number of non‑zero coefficients**: 1 (for both R **spls** and GeneSPLS)  
+- **Selected SNP**: `SNP_3939`  
+- **Coefficient agreement**: Estimates identical within a tolerance of $10^{-6}$.
+
+### Computational Performance
+
+**Model‐fitting benchmark** (50 iterations, `microbenchmark`):
+
+| Implementation          | Mean Runtime | Median Runtime | Speed‑up vs. R |
+|-------------------------|-------------:|---------------:|---------------:|
+| R **spls**              |       44.3 ms |         37.7 ms |            1× |
+| GeneSPLS C++            |       24.7 ms |         24.6 ms |        ~1.8× | 
+
+**Iteration benchmark** (20 iterations, `bench::mark`):
+
+| Implementation          | Median Time | Iter/sec | Mem. Alloc. |
+|-------------------------|------------:|---------:|------------:|
+| R **spls**              |      37.0 ms |    24.4  |    57.6 MB |
+| GeneSPLS C++            |      25.5 ms |    39.1  |    15.4 MB | 
+
+These results demonstrate that GeneSPLS matches the statistical performance of the R **spls** algorithm—recovering the true causal SNP and producing identical coefficient estimates—while substantially reducing computation time and memory usage on simulated univariate data.
+
+---
+
 ## Results from test_real_univariate.Rmd
 
 In this analysis, the GeneSPLS model was applied to real eQTL data focusing on the expression of the **AKT3** gene. The primary aim was to identify SNPs that exhibit non‑zero effects on AKT3 expression.
 
 **Cross‑Validation and Tuning**  
-We evaluated a grid of sparsity levels (\(\eta\) = 0.95 – 0.99) and numbers of components (K = 1 – 10) via 5‑fold CV using the C++ implementation.  
-- **Optimal parameters**: \(\eta = 0.99\), \(K = 1\)  
+We evaluated a grid of sparsity levels ($\eta$ = 0.95 – 0.99) and numbers of components ($K = 1 – 10$) via 5‑fold CV using the C++ implementation.  
+- **Optimal parameters**: $\eta = 0.99$, $K = 1$  
 
 **Model Fitting and Coefficient Validation**  
 Using these settings, we fitted SPLS with both the R (`spls`) and GeneSPLS C++ (`spls_cpp`) implementations.  
