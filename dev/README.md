@@ -316,6 +316,40 @@ These results demonstrate that GeneSPLS matches the statistical performance of t
 
 ---
 
+## Results from test_simulated_multivariate.Rmd
+
+In this simulation study, we assessed the performance and computational efficiency of the GeneSPLS implementation against the standard R **spls** package under a multivariate‐response scenario. A synthetic dataset with multiple correlated outcomes (_Y\_multi\_sim_) and a large set of predictors (_X\_multi\_sim_) was generated as described in the Methods. We performed 5‐fold cross‐validation over a grid of sparsity parameters $η∈{0.95,0.96,0.97,0.98,0.99}$ and numbers of PLS components $K∈{1,…,10}$.
+
+**Cross‐validation.**  
+Both the R and C++ versions of the SPLS cross‐validation agreed on the optimal tuning parameters:
+- **Optimal parameters:** $\eta = 0.99$, $K = 1$ for both implementations.
+
+**Model fitting.**  
+With $\eta = 0.99$ and $K = 1$ fixed, we fitted SPLS models in both R and C++ to _X\_multi\_sim_ and _Y\_multi\_sim_. Although the multivariate coefficient matrices are high‐dimensional, the two implementations produced identical model fits (not shown here) and selected the same sparse latent structures in all trials.
+
+**Benchmarking.**  
+We compared runtime performance on a single CPU (Intel i7, 2.6 GHz) using microbenchmark and bench:
+
+1. **Cross‐validation benchmark** (single replication)  
+   - **R (cv.spls):** 301.58 s  
+   - **C++ (cv_spls_cpp):** 265.49 s  
+
+2. **Model‐fit benchmark** (50 iterations, microbenchmark)  
+   | Implementation       | min    | mean    | median  | max     | unit      |
+   |----------------------|--------|---------|---------|---------|-----------|
+   | spls (R)             | 999.93 ms | 1 020.20 ms | 1 012.51 ms | 1 101.08 ms | milliseconds |
+   | GeneSPLS (C++)       | 908.50 ms |   930.57 ms |   922.14 ms |   1 075.55 ms | milliseconds |
+
+3. **Detailed throughput and memory** (20 iterations, bench::mark)  
+   | Implementation       | min    | median  | `itr/sec` | mem_alloc | `gc/sec` | total_time |
+   |----------------------|--------|---------|-----------|-----------|----------|------------|
+   | spls (R)             | 989 ms  | 1.01 s   | 0.985     |   171 MB  | 2.26     | 20.3 s     |
+   | GeneSPLS (C++)       | 907 ms  | 0.917 s  | 1.09      |    27 MB  | 0.217    | 18.4 s     |
+
+Across all benchmarks, the C++ implementation delivered a ~10–15 % speed‐up on model fitting and reduced memory allocation by an order of magnitude, while cross‐validation ran approximately 12 % faster. These results demonstrate that GeneSPLS scales more efficiently to high‐dimensional, multivariate problems without compromising estimation accuracy.
+
+---
+
 ## Results from test_real_univariate.Rmd
 
 In this analysis, the GeneSPLS model was applied to real eQTL data focusing on the expression of the **AKT3** gene. The primary aim was to identify SNPs that exhibit non‑zero effects on AKT3 expression.
