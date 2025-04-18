@@ -286,27 +286,42 @@ A separate script (`Process_GeneExpression_Genotype.R`) is provided to harmonize
 
 ## Results from test_real_univariate.Rmd
 
-In this analysis, the GeneSPLS model was applied to real eQTL data focusing on the expression of the AKT3 gene. The primary aim was to identify SNPs that exhibit non-zero effects on AKT3 expression. After tuning the SPLS models over a range of sparsity levels (optimal `η` from 0.95 to 0.99 based on cross-validation), a total of 7 SNPs were selected as important features. Notably, **4 SNPs** (listed in **bold** in the table below) were consistently selected across all SPLS model fits, indicating robust associations. These SNPs map to two distinct genomic regions: three lie on chromosome 1p36 and the remainder on chromosome 9p22, as summarized in **Table 1**.
+In this analysis, the GeneSPLS model was applied to real eQTL data focusing on the expression of the **AKT3** gene. The primary aim was to identify SNPs that exhibit non‑zero effects on AKT3 expression.
+
+**Cross‑Validation and Tuning**  
+We evaluated a grid of sparsity levels (\(\eta\) = 0.95 – 0.99) and numbers of components (K = 1 – 10) via 5‑fold CV using the C++ implementation.  
+- **Optimal parameters**: \(\eta = 0.99\), \(K = 1\)  
+
+**Model Fitting and Coefficient Validation**  
+Using these settings, we fitted SPLS with both the R (`spls`) and GeneSPLS C++ (`spls_cpp`) implementations.  
+- **Number of non‑zero coefficients**: 4 (identical in both implementations)  
+- **Consistently selected SNPs** (identical in both): **rs6691809**, **rs6577402**, **rs693196**, **rs7876026**  
+
+The full set of seven SNPs with non‑zero effects (four of which were robust across all fits) is summarized in **Table 1**.
 
 **Table 1.** Genomic location, gene annotation, and distance to AKT3 of the 7 selected SNPs (GRCh38). SNPs in **bold** were consistently selected in all SPLS models.
 
 | **SNP (rsID)**    | **Chromosome: Position** | **Gene (Annotation)**       | **Distance to AKT3**                          |
 |-------------------|--------------------------|-----------------------------|-----------------------------------------------|
-| **rs6691809**     | 1:7008964                | CAMTA1 (intronic variant)   | ~236.5 Mb upstream of AKT3                    |
-| **rs6577402**     | 1:7014668                | CAMTA1 (intronic variant)   | ~236.5 Mb upstream of AKT3                    |
-| rs2412208         | 1:7032722                | CAMTA1 (intronic variant)   | ~236.5 Mb upstream of AKT3                    |
-| **rs693196**      | 9:15202419               | TTC39B (intronic variant)   | Not applicable (different chromosome)         |
-| **rs7876026**     | 9:15202817               | TTC39B (intronic variant)   | Not applicable (different chromosome)         |
-| rs508314          | 9:15189274               | TTC39B (intronic variant)   | Not applicable (different chromosome)         |
-| rs1407977         | 9:15188108               | TTC39B (missense variant)   | Not applicable (different chromosome)         |
+| **rs6691809**     | 1:7 008 964              | CAMTA1 (intronic variant)   | ~236.5 Mb upstream of AKT3                    |
+| **rs6577402**     | 1:7 014 668              | CAMTA1 (intronic variant)   | ~236.5 Mb upstream of AKT3                    |
+| rs2412208         | 1:7 032 722              | CAMTA1 (intronic variant)   | ~236.5 Mb upstream of AKT3                    |
+| **rs693196**      | 9:15 202 419             | TTC39B (intronic variant)   | Not applicable (different chromosome)         |
+| **rs7876026**     | 9:15 202 817             | TTC39B (intronic variant)   | Not applicable (different chromosome)         |
+| rs508314          | 9:15 189 274             | TTC39B (intronic variant)   | Not applicable (different chromosome)         |
+| rs1407977         | 9:15 188 108             | TTC39B (missense variant)   | Not applicable (different chromosome)         |
 
-Most of the chromosome 1 SNPs lie within the _CAMTA1_ gene (Calmodulin-binding transcription activator 1). _CAMTA1_ is a known anti‑tumor gene that plays a role in cell cycle regulation by inhibiting AKT phosphorylation. Phosphorylation of AKT is a key activation step in the AKT signaling pathway, which promotes cell growth and survival. Higher levels of phospho‑AKT are associated with more aggressive proliferation of cancer cells, and AKT3 (one of the three AKT isoforms) is expressed in many tissues and contributes to cell proliferation—silencing AKT3 can suppress cell growth in cancer models ([Zhang et al., 2015](https://pmc.ncbi.nlm.nih.gov/articles/PMC4694976/#:~:text=of%20prostate%20cancer%20cells%20both)). Although the _CAMTA1_ locus on 1p36 (~7.0 Mb) is separated by over 236 Mb from the _AKT3_ locus on 1q43–q44 (~243.5 Mb), the functional interaction—_CAMTA1_’s inhibition of AKT phosphorylation—provides a plausible mechanistic link to AKT3 signaling.
+**Genomic and Functional Insights**  
+Most of the chromosome 1 SNPs lie within the _CAMTA1_ gene (Calmodulin‑binding transcription activator 1). _CAMTA1_ is a well‑characterized anti‑tumor transcription factor that regulates the cell cycle by **inhibiting AKT phosphorylation**. AKT phosphorylation is the key activation step in the AKT signaling cascade, driving cell growth and survival; in particular, **AKT3**—one of the three AKT isoforms—is a critical mediator of proliferation in multiple tissues, and its silencing suppresses cancer cell growth (Zhang _et al._, 2015). Although the _CAMTA1_ locus on 1p36 (~7.0 Mb) is separated by > 236 Mb from the _AKT3_ locus on 1q43–q44 (~243.5 Mb), this functional inhibition provides a plausible mechanistic link to AKT3 signaling.
 
-By contrast, the remaining SNPs reside on chromosome 9 in the _TTC39B_ gene (Tetratricopeptide repeat domain 39B) at 9p22.3. Two of these (**rs693196** and **rs7876026**) were consistently selected across all models, and all four chromosome 9 variants fall within intronic regions (except rs1407977, which is a missense variant). _TTC39B_ has been implicated in metabolic regulation, notably cholesterol homeostasis, and is not known to be directly connected to the AKT pathway. The enrichment of SPLS‑selected SNPs in _TTC39B_ therefore suggests a second, independent locus that may influence gene expression through a separate biological mechanism.
+By contrast, the remaining SNPs reside on chromosome 9 in the _TTC39B_ gene (Tetratricopeptide repeat domain 39B) at 9p22.3. Two of these (**rs693196**, **rs7876026**) were robustly selected across all models, and the four chromosome 9 variants fall within intronic regions (except rs1407977, a missense variant). _TTC39B_ has been implicated in metabolic regulation—particularly cholesterol homeostasis—and is not known to participate directly in AKT signaling. The enrichment of SPLS‑selected SNPs in _TTC39B_ suggests a second, independent locus that may influence gene expression through a distinct biological mechanism.
 
-In summary, our SPLS analysis identified two genomic regions of interest:
-1. **Chromosome 1p36 (CAMTA1):** Variants potentially modulating AKT phosphorylation and thus AKT3 activity via an anti‑tumor transcription factor.
-2. **Chromosome 9p22 (TTC39B):** A novel locus warranting further investigation into its role in gene regulation. 
+**Computational Performance**  
+Benchmarking (50 iterations) of the **model‑fitting** step revealed:  
+- **R implementation (`spls`)**: mean runtime ≈ 7.9 s per fit, peak allocation ≈ 14.4 GB  
+- **C++ implementation (`spls_cpp`)**: mean runtime ≈ 3.5 s per fit, peak allocation ≈ 2.4 GB  
+
+Thus, the GeneSPLS C++ backend achieves a > 2‑fold speed‑up and an ≈ 6× reduction in memory usage for SPLS model fitting.
 
 ---
 
