@@ -104,7 +104,7 @@ spls.model <- spls_cpp(
   trace = FALSE)
 
 # Plot non-zero estimated coefficients
-# Note: fit simple model for plot clarify
+# Note: fit simple model for plot clarity
 sens_plot(
   X,
   Y,

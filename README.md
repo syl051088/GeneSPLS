@@ -93,7 +93,7 @@ cv_result_cpp <- cv_spls_cpp(
 #> eta = 0.8
 #> eta = 0.9
 #> 
-#> Optimal parameters: eta = 0.2, K = 3
+#> Optimal parameters: eta = 0.4, K = 7
 
 best_eta <- cv_result_cpp$eta.opt # Optimal sparsity parameter
 best_K <- cv_result_cpp$K.opt # Optimal latent components
@@ -116,7 +116,7 @@ spls.model <- spls_cpp(
   trace = FALSE)
 
 # Plot non-zero estimated coefficients
-# Note: fit simple model for plot clarify
+# Note: fit simple model for plot clarity
 sens_plot(
   X,
   Y,
