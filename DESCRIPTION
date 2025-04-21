@@ -17,10 +17,8 @@ LinkingTo: Rcpp, RcppArmadillo
 Suggests: 
     knitr,
     pls,
-    rmarkdown,
-    testthat (>= 3.0.0)
+    rmarkdown
 Config/testthat/edition: 3
 RoxygenNote: 7.3.2
 Encoding: UTF-8
 Depends: R (>= 3.5.0)
-VignetteBuilder: knitr
