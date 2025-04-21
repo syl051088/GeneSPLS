@@ -12,16 +12,16 @@
 //' 
 //' @param x Predictor matrix (n x p)
 //' @param y Response matrix (n x q)
-//' @param K Number of latent components
-//' @param eta Sparsity parameter, 0 < eta < 1
-//' @param kappa If y is multivariate, 0 < kappa <= 0.5
-//' @param select Method for variable selection: "pls2" (update Y) or "simpls" (update X)
-//' @param fit Always "widekernelpls" in this implementation
-//' @param scale_x Whether to scale the predictor matrix
-//' @param scale_y Whether to scale the response matrix
-//' @param eps Convergence criterion for direction vector calculation
-//' @param maxstep Maximum number of iterations for direction vector calculation
-//' @param trace Whether to print progress information
+//' @param K Number of latent components (default: 1)
+//' @param eta Sparsity parameter, 0 < eta < 1 (default: 0.99)
+//' @param kappa If y is multivariate, 0 < kappa <= 0.5 (default: 0.5)
+//' @param select Method for variable selection: "pls2" (update Y) or "simpls" (update X) (default: "pls2")
+//' @param fit PLS estimation algorithm (only "widekernelpls" implemented) (default: "widekernelpls")
+//' @param scale_x Whether to scale the predictor matrix (default: TRUE)
+//' @param scale_y Whether to scale the response matrix (default: FALSE)
+//' @param eps Convergence criterion for direction vector calculation (default: 1e-4)
+//' @param maxstep Maximum number of iterations for direction vector calculation (default: 100)
+//' @param trace Whether to print progress (default: FALSE)
 //' 
 //' @return A list containing model information including:
 //' \item{betahat}{Regression coefficients}

@@ -36,16 +36,16 @@ std::vector< std::vector<int> > generate_folds(int n, int fold) {
 //'
 //' @param x Predictor matrix (n x p)
 //' @param y Response matrix (n x q)
-//' @param fold Number of folds for cross-validation
-//' @param eta Numeric vector of sparsity parameters
-//' @param K Integer vector of candidate numbers of components
-//' @param kappa Sparsity parameter
-//' @param select Selection method
-//' @param scale_x Logical, whether to scale x
-//' @param scale_y Logical, whether to scale y
-//' @param eps Convergence criterion
-//' @param maxstep Maximum number of iterations
-//' @param trace Logical, whether to print progress
+//' @param fold Number of folds for cross-validation (default: 5)
+//' @param eta Numeric vector of sparsity parameters (default: (0.95, 0.96, 0.97, 0.98, 0.99))
+//' @param K Integer vector of candidate numbers of components (default: (1, 2, 3, 4, 5))
+//' @param kappa Sparsity parameter (default: 0.5)
+//' @param select Selection method (default: "pls2")
+//' @param scale_x Logical, whether to scale x (default: TRUE)
+//' @param scale_y Logical, whether to scale y (default: FALSE)
+//' @param eps Convergence criterion (default: 1e-4)
+//' @param maxstep Maximum number of iterations (default: 100)
+//' @param trace Logical, whether to print progress (default: FALSE)
 //'
 //' @return A list containing:
 //' \item{mspemat}{Matrix of mean squared prediction errors (MSPE)}

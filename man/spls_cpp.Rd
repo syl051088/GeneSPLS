@@ -9,14 +9,14 @@ spls_cpp(
   y,
   K,
   eta,
-  kappa = 0.5,
-  select = "pls2",
-  fit = "widekernelpls",
-  scale_x = TRUE,
-  scale_y = FALSE,
-  eps = 1e-04,
-  maxstep = 100L,
-  trace = FALSE
+  kappa,
+  select,
+  fit,
+  scale_x,
+  scale_y,
+  eps,
+  maxstep,
+  trace
 )
 }
 \arguments{
@@ -24,25 +24,25 @@ spls_cpp(
 
 \item{y}{Response matrix (n x q)}
 
-\item{K}{Number of latent components}
+\item{K}{Number of latent components (default: 1)}
 
-\item{eta}{Sparsity parameter, 0 < eta < 1}
+\item{eta}{Sparsity parameter, 0 < eta < 1 (default: 0.99)}
 
-\item{kappa}{If y is multivariate, 0 < kappa <= 0.5}
+\item{kappa}{If y is multivariate, 0 < kappa <= 0.5 (default: 0.5)}
 
-\item{select}{Method for variable selection: "pls2" (update Y) or "simpls" (update X)}
+\item{select}{Method for variable selection: "pls2" (update Y) or "simpls" (update X) (default: "pls2")}
 
-\item{fit}{Always "widekernelpls" in this implementation}
+\item{fit}{PLS estimation algorithm (only "widekernelpls" implemented) (default: "widekernelpls")}
 
-\item{scale_x}{Whether to scale the predictor matrix}
+\item{scale_x}{Whether to scale the predictor matrix (default: TRUE)}
 
-\item{scale_y}{Whether to scale the response matrix}
+\item{scale_y}{Whether to scale the response matrix (default: FALSE)}
 
-\item{eps}{Convergence criterion for direction vector calculation}
+\item{eps}{Convergence criterion for direction vector calculation (default: 1e-4)}
 
-\item{maxstep}{Maximum number of iterations for direction vector calculation}
+\item{maxstep}{Maximum number of iterations for direction vector calculation (default: 100)}
 
-\item{trace}{Whether to print progress information}
+\item{trace}{Whether to print progress (default: FALSE)}
 }
 \value{
 A list containing model information including:

@@ -11,8 +11,8 @@
 //'
 //' @param X Predictor matrix (n x p), p is the number of predictors
 //' @param Y Response matrix (n x m), m is the number of responses
-//' @param ncomp Number of components to extract
-//' @param center Logical, whether to center X and Y (default: true)
+//' @param ncomp Number of components to extract (default: 5)
+//' @param center Logical, whether to center X and Y (default: TRUE)
 //' @param tol Numeric, tolerance used for determining convergence (default: 1.5e-8)
 //' @param maxit Integer, maximum number of iterations (default: 100)
 //'
@@ -52,9 +52,9 @@
 Rcpp::List widekernelpls_fit(arma::mat X,
                              arma::mat Y,
                              int ncomp,
-                             bool center = true,
-                             double tol = 1.5e-8,
-                             int maxit = 100) {
+                             bool center,
+                             double tol,
+                             int maxit) {
  int nobj = X.n_rows;
  int npred = X.n_cols;
  int nresp = Y.n_cols;

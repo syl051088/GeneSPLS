@@ -24,25 +24,25 @@ cv_spls_cpp(
 
 \item{y}{Response matrix (n x q)}
 
-\item{fold}{Number of folds for cross-validation}
+\item{fold}{Number of folds for cross-validation (default: 5)}
 
-\item{eta}{Numeric vector of sparsity parameters}
+\item{eta}{Numeric vector of sparsity parameters (default: (0.95, 0.96, 0.97, 0.98, 0.99))}
 
-\item{K}{Integer vector of candidate numbers of components}
+\item{K}{Integer vector of candidate numbers of components (default: (1, 2, 3, 4, 5))}
 
-\item{kappa}{Sparsity parameter}
+\item{kappa}{Sparsity parameter (default: 0.5)}
 
-\item{select}{Selection method}
+\item{select}{Selection method (default: "pls2")}
 
-\item{scale_x}{Logical, whether to scale x}
+\item{scale_x}{Logical, whether to scale x (default: TRUE)}
 
-\item{scale_y}{Logical, whether to scale y}
+\item{scale_y}{Logical, whether to scale y (default: FALSE)}
 
-\item{eps}{Convergence criterion}
+\item{eps}{Convergence criterion (default: 1e-4)}
 
-\item{maxstep}{Maximum number of iterations}
+\item{maxstep}{Maximum number of iterations (default: 100)}
 
-\item{trace}{Logical, whether to print progress}
+\item{trace}{Logical, whether to print progress (default: FALSE)}
 }
 \value{
 A list containing:

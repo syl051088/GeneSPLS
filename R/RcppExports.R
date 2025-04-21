@@ -25,16 +25,16 @@ NULL
 #'
 #' @param x Predictor matrix (n x p)
 #' @param y Response matrix (n x q)
-#' @param fold Number of folds for cross-validation
-#' @param eta Numeric vector of sparsity parameters
-#' @param K Integer vector of candidate numbers of components
-#' @param kappa Sparsity parameter
-#' @param select Selection method
-#' @param scale_x Logical, whether to scale x
-#' @param scale_y Logical, whether to scale y
-#' @param eps Convergence criterion
-#' @param maxstep Maximum number of iterations
-#' @param trace Logical, whether to print progress
+#' @param fold Number of folds for cross-validation (default: 5)
+#' @param eta Numeric vector of sparsity parameters (default: (0.95, 0.96, 0.97, 0.98, 0.99))
+#' @param K Integer vector of candidate numbers of components (default: (1, 2, 3, 4, 5))
+#' @param kappa Sparsity parameter (default: 0.5)
+#' @param select Selection method (default: "pls2")
+#' @param scale_x Logical, whether to scale x (default: TRUE)
+#' @param scale_y Logical, whether to scale y (default: FALSE)
+#' @param eps Convergence criterion (default: 1e-4)
+#' @param maxstep Maximum number of iterations (default: 100)
+#' @param trace Logical, whether to print progress (default: FALSE)
 #'
 #' @return A list containing:
 #' \item{mspemat}{Matrix of mean squared prediction errors (MSPE)}
@@ -58,8 +58,8 @@ cv_spls_cpp <- function(x, y, fold, eta, K, kappa, select, scale_x, scale_y, eps
 #'
 #' @param X Predictor matrix (n x p), p is the number of predictors
 #' @param Y Response matrix (n x m), m is the number of responses
-#' @param ncomp Number of components to extract
-#' @param center Logical, whether to center X and Y (default: true)
+#' @param ncomp Number of components to extract (default: 5)
+#' @param center Logical, whether to center X and Y (default: TRUE)
 #' @param tol Numeric, tolerance used for determining convergence (default: 1.5e-8)
 #' @param maxit Integer, maximum number of iterations (default: 100)
 #'
@@ -95,7 +95,7 @@ cv_spls_cpp <- function(x, y, fold, eta, K, kappa, select, scale_x, scale_y, eps
 #' 
 #' @export
 #' 
-widekernelpls_fit <- function(X, Y, ncomp, center = TRUE, tol = 1.5e-8, maxit = 100L) {
+widekernelpls_fit <- function(X, Y, ncomp, center, tol, maxit) {
     .Call(`_GeneSPLS_widekernelpls_fit`, X, Y, ncomp, center, tol, maxit)
 }
 
@@ -106,16 +106,16 @@ widekernelpls_fit <- function(X, Y, ncomp, center = TRUE, tol = 1.5e-8, maxit = 
 #' 
 #' @param x Predictor matrix (n x p)
 #' @param y Response matrix (n x q)
-#' @param K Number of latent components
-#' @param eta Sparsity parameter, 0 < eta < 1
-#' @param kappa If y is multivariate, 0 < kappa <= 0.5
-#' @param select Method for variable selection: "pls2" (update Y) or "simpls" (update X)
-#' @param fit Always "widekernelpls" in this implementation
-#' @param scale_x Whether to scale the predictor matrix
-#' @param scale_y Whether to scale the response matrix
-#' @param eps Convergence criterion for direction vector calculation
-#' @param maxstep Maximum number of iterations for direction vector calculation
-#' @param trace Whether to print progress information
+#' @param K Number of latent components (default: 1)
+#' @param eta Sparsity parameter, 0 < eta < 1 (default: 0.99)
+#' @param kappa If y is multivariate, 0 < kappa <= 0.5 (default: 0.5)
+#' @param select Method for variable selection: "pls2" (update Y) or "simpls" (update X) (default: "pls2")
+#' @param fit PLS estimation algorithm (only "widekernelpls" implemented) (default: "widekernelpls")
+#' @param scale_x Whether to scale the predictor matrix (default: TRUE)
+#' @param scale_y Whether to scale the response matrix (default: FALSE)
+#' @param eps Convergence criterion for direction vector calculation (default: 1e-4)
+#' @param maxstep Maximum number of iterations for direction vector calculation (default: 100)
+#' @param trace Whether to print progress (default: FALSE)
 #' 
 #' @return A list containing model information including:
 #' \item{betahat}{Regression coefficients}

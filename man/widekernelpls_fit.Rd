@@ -4,16 +4,16 @@
 \alias{widekernelpls_fit}
 \title{Wide Kernel PLS Algorithm Implementation}
 \usage{
-widekernelpls_fit(X, Y, ncomp, center = TRUE, tol = 1.5e-08, maxit = 100L)
+widekernelpls_fit(X, Y, ncomp, center, tol, maxit)
 }
 \arguments{
 \item{X}{Predictor matrix (n x p), p is the number of predictors}
 
 \item{Y}{Response matrix (n x m), m is the number of responses}
 
-\item{ncomp}{Number of components to extract}
+\item{ncomp}{Number of components to extract (default: 5)}
 
-\item{center}{Logical, whether to center X and Y (default: true)}
+\item{center}{Logical, whether to center X and Y (default: TRUE)}
 
 \item{tol}{Numeric, tolerance used for determining convergence (default: 1.5e-8)}
 
