@@ -131,7 +131,6 @@ sens_plot(
 ``` text
 GeneSPLS
 ├── DESCRIPTION
-├── GeneSPLS.Rproj
 ├── LICENSE
 ├── NAMESPACE
 ├── R
@@ -168,12 +167,5 @@ GeneSPLS
 │   ├── spls.o
 │   ├── spls_dv.cpp
 │   ├── spls_dv.h
-│   └── spls_dv.o
-├── tests
-│   ├── testthat
-│   │   ├── test-widekernelpls.R
-│   │   └── test.Rmd
-│   └── testthat.R
-└── vignettes
-    └── Tutorial.Rmd
+    └── spls_dv.o
 ```
